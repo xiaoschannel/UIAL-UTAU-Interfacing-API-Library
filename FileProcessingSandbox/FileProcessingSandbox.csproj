@@ -63,10 +63,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Mrq4Cs\Mrq4Cs.csproj">
-      <Project>{0f934b5e-c2d8-4b04-bd65-12d048bf09f8}</Project>
-      <Name>Mrq4Cs</Name>
-    </ProjectReference>
     <ProjectReference Include="..\UIAL-Main\UIAL-Main.csproj">
       <Project>{910b60d0-d6a2-4071-926b-c87ead305cb2}</Project>
       <Name>UIAL-Main</Name>

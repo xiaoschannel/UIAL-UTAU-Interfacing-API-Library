@@ -117,7 +117,13 @@ namespace zuoanqh.UIAL.Testing
     [TestMethod]
     public void TestReadMrq()
     {
-      Mrq.GetDictionary("dummyMrqs/desc.mrq");
+      var dic = Mrq.GetDictionary(@"D:\SourceTree\UTAU-Interfacing API Library\Tests\dummyMrqs\desc.mrq");
+
+      foreach (var v in dic.Keys)
+        Logger.Log(v + "\t" + string.Join(", ", dic[v]));
+
+      Logger.Save();
+      // var ent = Mrq.DoYourThingPlease(@"D:\SourceTree\UTAU-Interfacing API Library\Tests\dummyMrqs\desc.mrq");
     }
   }
 }

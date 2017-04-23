@@ -37,6 +37,6 @@ Sugita Akira (https://github.com/stakira/)
 ちていこ (https://twitter.com/chiteico)
 	For many helpful advices.
     
-Unfortunately, UIAL is built on my own utility library, zut. you will need to get that to compile my code. Feel free to suggest better alternatives!
+Unfortunately, UIAL is built on my own utility library, zut. You will need to get that to compile my code. Feel free to suggest better alternatives!
 
 UIAL uses UDE for character encoding detection.
