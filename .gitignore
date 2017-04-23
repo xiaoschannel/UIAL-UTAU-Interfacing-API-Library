@@ -8,8 +8,7 @@
 *.sln.docstates
 
 # Dummy files for testing
-FileSandbox/dummy*
-Testing/oto/
+Tests/dummy*
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
