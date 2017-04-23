@@ -1,0 +1,148 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>    
+    <TargetFramework>netcoreapp1.1</TargetFramework>    
+    <RootNamespace>zuoanqh.UIAL.Testing</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="dummyUSTs\**" />
+    <EmbeddedResource Remove="dummyUSTs\**" />
+    <None Remove="dummyUSTs\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="dummyCharacter\anna nyui.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyCharacter\desune moralix.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyCharacter\poiyo edge.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyCharacter\Xia2.02Zhu.txt" />
+    <Content Include="dummyMrqs\desc.mrq">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyOtos\code test.txt" />
+    <Content Include="dummyOtos\desune moralix RAW A3 UTF8.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyOtos\desune moralix RAW A3.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyOtos\desune moralix RAW B4.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyOtos\desune moralix RAW breath.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyOtos\desune moralix RAW breathUTF8.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyOtos\desune moralix RAW C4.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyOtos\desune moralix RAW F.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyOtos\desune moralix RAW F3.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyOtos\desune moralix RAW Fs4.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyOtos\poiyo edge breath.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyOtos\poiyo edge breathUTF8.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyOtos\poiyo edge C4.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyOtos\poiyo edge E3.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyOtos\vivid_A4.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyOtos\vivid_B3.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyOtos\vivid_E4.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyOtos\vivid_other.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyOtos\Xia2.02_PinHigh.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyOtos\Xia2.02_PinLow.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyOtos\Xia2.02_PinMid.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyOtos\Xia2.02_ZhuHigh.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyOtos\Xia2.02_ZhuHighUTF8.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyOtos\Xia2.02_ZhuLow.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyOtos\Xia2.02_ZhuMed.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyOtos\XiaOutside_Zhu_Canto.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyOtos\XiaOutside_Zhu_Deer.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyOtos\XiaOutside_Zhu_Special.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyPrefixMaps\anna nyui.map">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyPrefixMaps\desune moralix.map">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dummyPrefixMaps\poiyo edge.map">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.1.14" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.1.14" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="4.3.0" />
+    <PackageReference Include="Ude.NetStandard" Version="1.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Mrq4Cs\Mrq4Cs.csproj" />
+    <ProjectReference Include="..\UIAL-Main\UIAL-Main.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="libzut">
+      <HintPath>C:\Users\zuoanqh\Documents\GitHub\zut\libzut\bin\Debug\netstandard1.4\libzut.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="dummyInstall\" />
+  </ItemGroup>
+
+</Project>
