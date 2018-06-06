@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.4</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>zuoanqh.UIAL</RootNamespace>
     <AssemblyName>UIAL</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
     <Reference Include="libzut">
-      <HintPath>C:\Users\zuoanqh\Documents\GitHub\zut\libzut\bin\Debug\netstandard1.4\libzut.dll</HintPath>
+      <HintPath>C:\Users\zuoan\Documents\GitHub\zut_CSharp\libzut\bin\Debug\netstandard2.0\libzut.dll</HintPath>
     </Reference>
   </ItemGroup>
 

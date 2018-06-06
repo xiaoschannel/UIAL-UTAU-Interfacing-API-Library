@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>    
-    <TargetFramework>netcoreapp1.1</TargetFramework>    
+    <TargetFramework>netcoreapp2.0</TargetFramework>    
     <RootNamespace>zuoanqh.UIAL.Testing</RootNamespace>
   </PropertyGroup>
 
@@ -119,11 +119,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="1.1.14" />
-    <PackageReference Include="MSTest.TestFramework" Version="1.1.14" />
-    <PackageReference Include="System.Text.Encoding.CodePages" Version="4.3.0" />
-    <PackageReference Include="Ude.NetStandard" Version="1.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.2" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.3.2" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.3.2" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="4.5.0" />
+    <PackageReference Include="Ude.NetStandard" Version="1.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -132,17 +132,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="libzut">
-      <HintPath>C:\Users\zuoanqh\Documents\GitHub\zut\libzut\bin\Debug\netstandard1.4\libzut.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="dummyInstall\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="libzut">
+      <HintPath>C:\Users\zuoan\Documents\GitHub\zut_CSharp\libzut\bin\Debug\netstandard2.0\libzut.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
