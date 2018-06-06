@@ -11,7 +11,7 @@ namespace zuoanqh.UIAL.VB
     /// 40 bytes of data, which we believe is made with (in order) 
     /// 8 bytes of "FREQ0003", 
     /// 12 bytes of data, 
-    /// 16 bytes of " speedwagon     ", 
+    /// 16 bytes of " speedwagon     ", (I tried to google but found nothing... anyone knows why?)
     /// 4 bytes of data of how many entries are there.
     /// </summary>
     public byte[] Header;
