@@ -2,6 +2,7 @@
 using zuoanqh.libzut.Data;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace zuoanqh.UIAL.UST
 {
@@ -302,7 +303,7 @@ namespace zuoanqh.UIAL.UST
     /// <returns></returns>
     public override string ToString()
     {
-      return zusp.List("\r\n", ToStringList().ToArray()) + "\r\n";
+      return String.Join("\r\n", ToStringList().ToArray()) + "\r\n";
     }
   }
 }

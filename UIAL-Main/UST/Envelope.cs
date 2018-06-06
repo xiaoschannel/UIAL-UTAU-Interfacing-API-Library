@@ -197,7 +197,7 @@ namespace zuoanqh.UIAL.UST
         l.Add(effectiveP4);
       }
 
-      return zusp.List(",", l.ToArray());
+      return String.Join(",", l.ToArray());
     }
   }
 }

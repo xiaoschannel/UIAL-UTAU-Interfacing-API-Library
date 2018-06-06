@@ -2,6 +2,7 @@
 using zuoanqh.libzut.FileIO;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace zuoanqh.UIAL.VB
 {
@@ -56,7 +57,7 @@ namespace zuoanqh.UIAL.VB
 
     public override string ToString()
     {
-      return zusp.List("\r\n", CommonReferences.NOTENAMES.Reverse().Select(s => s + "\t\t" + Map[s])) + "\r\n";
+      return String.Join("\r\n", CommonReferences.NOTENAMES.Reverse().Select(s => s + "\t\t" + Map[s])) + "\r\n";
     }
   }
 }

@@ -147,7 +147,7 @@ namespace zuoanqh.UIAL.UST
     /// <returns></returns>
     public override string ToString()
     {
-      return zusp.List(" ", Parameters);
+      return String.Join(" ", Parameters);
     }
   }
 }

@@ -117,16 +117,16 @@ namespace zuoanqh.UIAL.UST
     /// All units in ms, default is 0.
     /// </summary>
     public VirtualArray<double> PBW;
-    public string PBWText { get { return zusp.List(" ", PBW.Select((s) => (s.Equals(0)) ? ("") : (s + "")).ToArray()); } }
+    public string PBWText { get { return String.Join(" ", PBW.Select((s) => (s.Equals(0)) ? ("") : (s + "")).ToArray()); } }
     /// <summary>
     /// All units are in 10-cents
     /// </summary>
     public VirtualArray<double> PBY;
-    public string PBYText { get { return zusp.List(" ", PBY.Select((s) => (s.Equals(0)) ? ("") : (s + "")).ToArray()); } }
+    public string PBYText { get { return String.Join(" ", PBY.Select((s) => (s.Equals(0)) ? ("") : (s + "")).ToArray()); } }
 
     public VirtualArray<string> PBM;
 
-    public string PBMText { get { return zusp.List(" ", PBM.ToArray()); } }
+    public string PBMText { get { return String.Join(" ", PBM.ToArray()); } }
 
     /// <summary>
     /// Returns the change in a given segment of pitchbend line.
@@ -251,7 +251,7 @@ namespace zuoanqh.UIAL.UST
 
     public override string ToString()
     {
-      return zusp.List("\r\n", ToStringList().ToArray()) + "\r\n";
+      return String.Join("\r\n", ToStringList().ToArray()) + "\r\n";
     }
   }
 }

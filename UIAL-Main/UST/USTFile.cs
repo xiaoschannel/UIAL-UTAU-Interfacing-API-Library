@@ -72,8 +72,6 @@ namespace zuoanqh.UIAL.UST
     /// </summary>
     public bool Mode2 { get { return ProjectInfo.GetAsBoolean(KEY_MODE2); } set { ProjectInfo.Set(KEY_MODE2, value); } }
 
-
-
     /// <summary>
     /// Yes, you can have more than 1 tracks. if you would like to pretend there's only one, use "Notes"
     /// </summary>
@@ -209,7 +207,7 @@ namespace zuoanqh.UIAL.UST
     /// <returns></returns>
     public override string ToString()
     {
-      return zusp.List("\r\n", ToStringList().ToArray()) + "\r\n";
+      return string.Join("\r\n", ToStringList().ToArray()) + "\r\n";
     }
   }
 }

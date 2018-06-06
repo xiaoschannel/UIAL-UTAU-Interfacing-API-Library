@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using zuoanqh.libzut;
 using zuoanqh.libzut.FileIO;
@@ -91,7 +92,7 @@ namespace zuoanqh.UIAL.VB
 
     public override string ToString()
     {
-      return zusp.List("\r\n", ToStringList().ToArray()) + "\r\n";
+      return String.Join("\r\n", ToStringList().ToArray()) + "\r\n";
     }
   }
 }

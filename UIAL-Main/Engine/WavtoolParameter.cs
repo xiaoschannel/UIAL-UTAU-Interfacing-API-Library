@@ -110,7 +110,7 @@ namespace zuoanqh.UIAL.Engine
       */
       get
       {
-        return new Envelope(zusp.List(",", Args.Skip(4).Take(7)
+        return new Envelope(String.Join(",", Args.Skip(4).Take(7)
           .Union(Enumerable.Repeat("%", 1))
           .Union(Args.Skip(12))));
       }

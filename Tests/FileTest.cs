@@ -98,10 +98,11 @@ namespace zuoanqh.UIAL.Testing
     [TestMethod]
     public void TestUSTRead()
     {
-      string usts = @"D:\Test UST Archive";
+      string usts = @"D:\Test UST Archive\Full";
       List<USTFile> lib = new List<USTFile>();
       Stopwatch sw = new Stopwatch();
       sw.Start();
+      int count = 0;
       foreach (string f in Directory.EnumerateFiles(usts, "*.*", SearchOption.AllDirectories).
         Where((s) => (s.ToLower().EndsWith(".ust"))))
       {
