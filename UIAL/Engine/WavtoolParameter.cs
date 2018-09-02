@@ -29,11 +29,6 @@ namespace zuoanqh.UIAL.Engine
     public class WavtoolParameter
     {
         /// <summary>
-        ///     Don't forget this can have 12 to 15 elements.
-        /// </summary>
-        public List<string> Args;
-
-        /// <summary>
         ///     This constructor is used when you have velocity, and can't be bothered to calculate its effect on other parameters.
         /// </summary>
         /// <param name="outputFile"></param>
@@ -95,6 +90,11 @@ namespace zuoanqh.UIAL.Engine
             : this(args.ToList())
         {
         }
+
+        /// <summary>
+        ///     Don't forget this can have 12 to 15 elements.
+        /// </summary>
+        public List<string> Args { get; }
 
         /// <summary>
         ///     Yes, I realize this is a different order than resampler parameters, no, i did not make this up.

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using zuoanqh.UIAL.UST;
 
 namespace zuoanqh.UIAL.Engine
@@ -17,13 +18,11 @@ namespace zuoanqh.UIAL.Engine
     /// </summary>
     public class ResamplerParameter
     {
-        public string[] Args;
-
         /// <summary>
         ///     Create a new instance with given parameters.
         /// </summary>
         /// <param name="args"></param>
-        public ResamplerParameter(string[] args)
+        public ResamplerParameter(params string[] args)
         {
             Args = args;
         }
@@ -36,10 +35,12 @@ namespace zuoanqh.UIAL.Engine
             Args = new string[13]; //there's 13 parameters
         }
 
-        public ResamplerParameter(List<string> args)
+        public ResamplerParameter(IEnumerable<string> args)
             : this(args.ToArray())
         {
         }
+
+        public string[] Args { get; }
 
         public string InputFile
         {
