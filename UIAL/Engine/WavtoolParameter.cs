@@ -94,7 +94,7 @@ namespace zuoanqh.UIAL.Engine
         /// <summary>
         ///     Don't forget this can have 12 to 15 elements.
         /// </summary>
-        public List<string> Args { get; }
+        public List<string> Args { get; set; }
 
         /// <summary>
         ///     Yes, I realize this is a different order than resampler parameters, no, i did not make this up.

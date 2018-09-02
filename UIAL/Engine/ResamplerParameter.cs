@@ -40,7 +40,7 @@ namespace zuoanqh.UIAL.Engine
         {
         }
 
-        public string[] Args { get; }
+        public string[] Args { get; set; }
 
         public string InputFile
         {
