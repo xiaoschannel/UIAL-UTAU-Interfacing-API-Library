@@ -10,11 +10,6 @@ namespace zuoanqh.UIAL.VoiceBank
     /// </summary>
     public class PrefixMap
     {
-        /// <summary>
-        ///     Note Name to Prefix.
-        /// </summary>
-        public Dictionary<string, string> Map;
-
         public PrefixMap(string fPath) : this(ByLineFileIO.ReadFileNoWhitespace(fPath, zuio.GetEncUde(fPath)).ToArray())
         {
         }
@@ -26,12 +21,17 @@ namespace zuoanqh.UIAL.VoiceBank
         ///     Lines in the file. Yes, you need to turn a file into lines. Because stupid windows store framework
         ///     whatever don't allow main thread to read file
         /// </param>
-        public PrefixMap(string[] data)
+        public PrefixMap(IEnumerable<string> data)
         {
             Map = new Dictionary<string, string>();
             var t = data.Select(s => zusp.Split(s, "\t\t"));
             foreach (var p in t) Map.Add(p[0], p[1]);
         }
+
+        /// <summary>
+        ///     Note Name to Prefix.
+        /// </summary>
+        public Dictionary<string, string> Map { get; set; }
 
 
         /// <summary>

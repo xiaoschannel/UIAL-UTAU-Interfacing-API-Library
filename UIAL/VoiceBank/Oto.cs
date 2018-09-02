@@ -12,16 +12,11 @@ namespace zuoanqh.UIAL.VoiceBank
         /// </summary>
         public static bool CheckEncoding = true;
 
-        public Dictionary<string, OtoAlias> Aliases;
-
-        public OtoAlias[] AliasesOrdered;
-        public Dictionary<string, List<OtoAlias>> Extras;
-
         public Oto(string fPath) : this(ByLineFileIO.ReadFileNoWhitespace(fPath, zuio.GetEncUde(fPath)).ToArray())
         {
         }
 
-        public Oto(string[] data)
+        public Oto(IEnumerable<string> data)
         {
             Aliases = new Dictionary<string, OtoAlias>();
             Extras = new Dictionary<string, List<OtoAlias>>();
@@ -31,6 +26,11 @@ namespace zuoanqh.UIAL.VoiceBank
 
             UpdateAliasesAndExtras();
         }
+
+        public Dictionary<string, OtoAlias> Aliases { get; set; }
+
+        public OtoAlias[] AliasesOrdered { get; set; }
+        public Dictionary<string, List<OtoAlias>> Extras { get; set; }
 
         public int AliasCount => Aliases.Count;
 
@@ -85,10 +85,7 @@ namespace zuoanqh.UIAL.VoiceBank
 
         public List<string> ToStringList()
         {
-            var ans = new List<string>();
-            foreach (var a in AliasesOrdered)
-                ans.Add(a.ToString());
-            return ans;
+            return AliasesOrdered.Select(a => a.ToString()).ToList();
         }
 
         public override string ToString()

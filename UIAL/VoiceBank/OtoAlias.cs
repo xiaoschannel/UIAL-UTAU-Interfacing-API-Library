@@ -6,8 +6,6 @@ namespace zuoanqh.UIAL.VoiceBank
 {
     public class OtoAlias : IComparable<OtoAlias>
     {
-        public string FName, Alias;
-
         /// <summary>
         ///     This would've been private. Please do not bully it.
         /// </summary>
@@ -22,6 +20,9 @@ namespace zuoanqh.UIAL.VoiceBank
             FName = t.First;
             Alias = l[0];
         }
+
+        public string FName { get; set; }
+        public string Alias { get; set; }
 
         public double Offset
         {
@@ -61,9 +62,9 @@ namespace zuoanqh.UIAL.VoiceBank
         public int CompareTo(OtoAlias other)
         {
             //have no idea how to make this into a loop
-            var n = Alias.CompareTo(other.Alias);
+            var n = string.Compare(Alias, other.Alias, StringComparison.Ordinal);
             if (n != 0) return n;
-            n = FName.CompareTo(other.FName);
+            n = string.Compare(FName, other.FName, StringComparison.Ordinal);
             if (n != 0) return n;
             n = (int) (Offset - other.Offset);
             if (n != 0) return n;
@@ -83,8 +84,7 @@ namespace zuoanqh.UIAL.VoiceBank
         /// <returns></returns>
         public override string ToString()
         {
-            return string.Format("{0}={1},{2},{3},{4},{5},{6}", FName, Alias, Offset, Consonant, Cutoff, PreUtterance,
-                Overlap);
+            return $"{FName}={Alias},{Offset},{Consonant},{Cutoff},{PreUtterance},{Overlap}";
         }
 
         /// <summary>

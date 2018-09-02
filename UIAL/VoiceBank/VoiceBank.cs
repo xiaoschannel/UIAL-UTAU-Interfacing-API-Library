@@ -7,17 +7,17 @@ namespace zuoanqh.UIAL.VoiceBank
     /// </summary>
     public class VoiceBank
     {
-        public CharacterTxt CharacterTxt;
+        public VoiceBank(string fPath)
+        {
+        }
+
+        public CharacterTxt CharacterTxt { get; set; }
 
         /// <summary>
         ///     the entry with key "" (empty string) is the oto in this voicebank's root folder.
         /// </summary>
-        public Dictionary<string, Oto> Otos;
+        public Dictionary<string, Oto> Otos { get; set; }
 
-        public PrefixMap PrefixMap;
-
-        public VoiceBank(string fPath)
-        {
-        }
+        public PrefixMap PrefixMap { get; set; }
     }
 }

@@ -7,17 +7,6 @@ namespace zuoanqh.UIAL.VoiceBank
     /// </summary>
     public class Frq
     {
-        public double[][] Data;
-
-        /// <summary>
-        ///     40 bytes of data, which we believe is made with (in order)
-        ///     8 bytes of "FREQ0003",
-        ///     12 bytes of data,
-        ///     16 bytes of " speedwagon     ", (I tried to google but found nothing... anyone knows why?)
-        ///     4 bytes of data of how many entries are there.
-        /// </summary>
-        public byte[] Header;
-
         public Frq(string fPath) : this(File.OpenRead(fPath))
         {
         }
@@ -30,5 +19,16 @@ namespace zuoanqh.UIAL.VoiceBank
             var data = new byte[length - 40];
             file.Read(data, 40, data.Length);
         }
+
+        public double[][] Data { get; set; }
+
+        /// <summary>
+        ///     40 bytes of data, which we believe is made with (in order)
+        ///     8 bytes of "FREQ0003",
+        ///     12 bytes of data,
+        ///     16 bytes of " speedwagon     ", (I tried to google but found nothing... anyone knows why?)
+        ///     4 bytes of data of how many entries are there.
+        /// </summary>
+        public byte[] Header { get; set; }
     }
 }
