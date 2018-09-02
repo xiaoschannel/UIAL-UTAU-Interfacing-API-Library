@@ -12,7 +12,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIAL", "UIAL\UIAL.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIAL.Tests", "UIAL.Tests\UIAL.Tests.csproj", "{E67DD5F0-1A19-4EF0-BDE1-E52D93BBB791}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIAL.Mrq4Cs", "UIAL.Mrq4Cs\UIAL.Mrq4Cs.csproj", "{997F0118-28C8-45E5-8C1D-D14FFF0DA3B3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIAL.Extensions.Mrq4Cs", "UIAL.Extensions.Mrq4Cs\UIAL.Extensions.Mrq4Cs.csproj", "{997F0118-28C8-45E5-8C1D-D14FFF0DA3B3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
