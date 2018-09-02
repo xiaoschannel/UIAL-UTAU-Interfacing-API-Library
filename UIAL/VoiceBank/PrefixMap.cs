@@ -42,7 +42,7 @@ namespace zuoanqh.UIAL.VoiceBank
         /// <param name="Mapping"></param>
         public void SetRange(string From, string To, string Mapping)
         {
-            SetRange(CommonReferences.NOTENAME_INDEX_RANK[From], CommonReferences.NOTENAME_INDEX_RANK[To], Mapping);
+            SetRange(Constants.NoteNameIndexRank[From], Constants.NoteNameIndexRank[To], Mapping);
         }
 
         /// <summary>
@@ -61,12 +61,12 @@ namespace zuoanqh.UIAL.VoiceBank
                 From ^= To;
             }
 
-            for (var i = From; i <= To; i++) Map[CommonReferences.NOTENAMES[i]] = Mapping;
+            for (var i = From; i <= To; i++) Map[Constants.NoteNames[i]] = Mapping;
         }
 
         public override string ToString()
         {
-            return string.Join("\r\n", CommonReferences.NOTENAMES.Reverse().Select(s => s + "\t\t" + Map[s])) + "\r\n";
+            return string.Join("\r\n", Constants.NoteNames.Reverse().Select(s => s + "\t\t" + Map[s])) + "\r\n";
         }
     }
 }

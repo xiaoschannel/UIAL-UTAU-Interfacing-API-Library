@@ -68,8 +68,8 @@ namespace zuoanqh.UIAL.Engine
         /// </summary>
         public int NoteNum
         {
-            get => CommonReferences.NOTENAME_INDEX_UST[NoteName];
-            set => NoteName = CommonReferences.GetNoteName(value);
+            get => Constants.NoteNameIndexUst[NoteName];
+            set => NoteName = Constants.GetNoteName(value);
         }
 
         /// <summary>
@@ -83,8 +83,8 @@ namespace zuoanqh.UIAL.Engine
 
         public double VelocityFactor
         {
-            get => CommonReferences.GetEffectiveVelocityFactor(Velocity);
-            set => Velocity = CommonReferences.GetVelocity(value);
+            get => Constants.GetEffectiveVelocityFactor(Velocity);
+            set => Velocity = Constants.GetVelocity(value);
         }
 
         public string FlagText
@@ -170,63 +170,63 @@ namespace zuoanqh.UIAL.Engine
         /// <summary>
         ///     To get the processed pitchebnd array, use GetPutchbendArray().
         /// </summary>
-        public string PitchbendString
+        public string PitchBendString
         {
             get => Args[12];
             set => Args[12] = value;
         }
 
         /// <summary>
-        ///     This decodes the pitchbend string into actual pitchbends in unit of cents, zeroed at given register. They only goes
+        ///     This decodes the pitchBend string into actual pitchBends in unit of cents, zeroed at given register. They only goes
         ///     from -2048 to 2048.
         /// </summary>
-        public int[] GetPitchbendArray()
+        public int[] GetPitchBendArray()
         {
-            return CommonReferences.DecodePitchbends(PitchbendString);
+            return Constants.DecodePitchBends(PitchBendString);
         }
 
         /// <summary>
-        ///     Use this if you only change one value in the pitchbend.
-        ///     Use "SetPitchbends" for many values.
+        ///     Use this if you only change one value in the pitchBend.
+        ///     Use "SetPitchBends" for many values.
         /// </summary>
         /// <param name="index"></param>
         /// <param name="value"></param>
-        public void SetPitchbend(int Index, int Value)
+        public void SetPitchBend(int Index, int Value)
         {
-            var array = CommonReferences.DecodePitchbends(PitchbendString);
+            var array = Constants.DecodePitchBends(PitchBendString);
             array[Index] = Value;
-            PitchbendString = CommonReferences.EncodePitchbends(array);
+            PitchBendString = Constants.EncodePitchBends(array);
         }
 
         /// <summary>
         /// </summary>
-        /// <param name="NewPitchbends"></param>
-        public void SetPitchbends(int[] NewPitchbends)
+        /// <param name="NewPitchBends"></param>
+        public void SetPitchBends(int[] NewPitchBends)
         {
-            PitchbendString = CommonReferences.EncodePitchbends(NewPitchbends);
+            PitchBendString = Constants.EncodePitchBends(NewPitchBends);
         }
 
         /// <summary>
         ///     Set a region in the original. Start and End both inclusive.
         ///     This is for when you have only the region you want to set.
-        ///     if you have the entire array, use SetPitchbends(int[])
+        ///     if you have the entire array, use SetPitchBends(int[])
         /// </summary>
         /// <param name="Start">Inclusive.</param>
         /// <param name="End">Inclusive.</param>
-        /// <param name="Pitchbends">the data for that region.</param>
-        public void SetPitchbends(int Start, int End, int[] Pitchbends)
+        /// <param name="PitchBends">the data for that region.</param>
+        public void SetPitchBends(int Start, int End, int[] PitchBends)
         {
-            var array = CommonReferences.DecodePitchbends(PitchbendString);
-            for (var i = Start; i <= End; i++) array[i] = Pitchbends[i - Start];
-            PitchbendString = CommonReferences.EncodePitchbends(array);
+            var array = Constants.DecodePitchBends(PitchBendString);
+            for (var i = Start; i <= End; i++) array[i] = PitchBends[i - Start];
+            PitchBendString = Constants.EncodePitchBends(array);
         }
 
         /// <summary>
         ///     This makes it shorter. Don't worry, data will be unchanged.
         /// </summary>
-        public void RecodePitchbendString()
+        public void RecodePitchBendString()
         {
-            PitchbendString = CommonReferences.EncodePitchbends(CommonReferences.DecodePitchbends(PitchbendString));
+            PitchBendString = Constants.EncodePitchBends(Constants.DecodePitchBends(PitchBendString));
         }
     }
 }

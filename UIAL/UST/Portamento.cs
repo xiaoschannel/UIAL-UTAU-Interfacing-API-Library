@@ -223,7 +223,7 @@ namespace zuoanqh.UIAL.UST
         }
 
         /// <summary>
-        ///     Returns the change in a given segment of pitchbend line.
+        ///     Returns the change in a given segment of pitchBend line.
         /// </summary>
         /// <param name="SegmentIndex">Starts at 0.</param>
         /// <returns></returns>
@@ -249,7 +249,7 @@ namespace zuoanqh.UIAL.UST
 
 
         /// <summary>
-        ///     Returns magnitude at time with respect to start of the pitchbend.
+        ///     Returns magnitude at time with respect to start of the pitchBend.
         /// </summary>
         /// <param name="time"></param>
         /// <returns></returns>

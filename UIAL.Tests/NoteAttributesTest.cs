@@ -10,12 +10,12 @@ namespace zuoanqh.UIAL.Tests
     [TestMethod]
     public void TestVelocity()
     {
-      Assert.AreEqual(CommonReferences.GetEffectiveVelocityFactor(0), 2);
-      Assert.AreEqual(CommonReferences.GetEffectiveVelocityFactor(100), 1);
-      Assert.AreEqual(CommonReferences.GetEffectiveVelocityFactor(200), 0.5);
-      Assert.AreEqual(CommonReferences.GetVelocity(2), 0);
-      Assert.AreEqual(CommonReferences.GetVelocity(1), 100);
-      Assert.AreEqual(CommonReferences.GetVelocity(0.5), 200);
+      Assert.AreEqual(Constants.GetEffectiveVelocityFactor(0), 2);
+      Assert.AreEqual(Constants.GetEffectiveVelocityFactor(100), 1);
+      Assert.AreEqual(Constants.GetEffectiveVelocityFactor(200), 0.5);
+      Assert.AreEqual(Constants.GetVelocity(2), 0);
+      Assert.AreEqual(Constants.GetVelocity(1), 100);
+      Assert.AreEqual(Constants.GetVelocity(0.5), 200);
     }
 
     [TestMethod]

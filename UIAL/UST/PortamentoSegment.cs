@@ -17,7 +17,7 @@
         }
 
         /// <summary>
-        ///     Creates an empty instance with 0 length, 0 pitchbend, s-curve.
+        ///     Creates an empty instance with 0 length, 0 pitchBend, s-curve.
         /// </summary>
         public PortamentoSegment() : this(0, 0, "")
         {

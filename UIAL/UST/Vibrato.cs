@@ -152,7 +152,7 @@ namespace zuoanqh.UIAL.UST
         }
 
         /// <summary>
-        ///     Returns the magnitude of pitchbend in cents at given time.
+        ///     Returns the magnitude of pitchBend in cents at given time.
         ///     Due to terrible interface given to us, length is required.
         ///     Note this will return 0 if time is outside range, will not throw exceptions.
         /// </summary>

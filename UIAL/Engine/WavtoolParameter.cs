@@ -47,9 +47,9 @@ namespace zuoanqh.UIAL.Engine
         /// <param name="Velocity"></param>
         public WavtoolParameter(string OutputFile, string InputFile, double STP, double Length,
             double Tempo, double PreUtterance, double Overlap, Envelope Envelope, double Velocity)
-            : this(OutputFile, InputFile, STP * CommonReferences.GetEffectiveVelocityFactor(Velocity),
-                Length, Tempo, PreUtterance * CommonReferences.GetEffectiveVelocityFactor(Velocity),
-                Overlap * CommonReferences.GetEffectiveVelocityFactor(Velocity), Envelope) //now that's a mouthful.
+            : this(OutputFile, InputFile, STP * Constants.GetEffectiveVelocityFactor(Velocity),
+                Length, Tempo, PreUtterance * Constants.GetEffectiveVelocityFactor(Velocity),
+                Overlap * Constants.GetEffectiveVelocityFactor(Velocity), Envelope) //now that's a mouthful.
         {
         }
 
@@ -276,8 +276,8 @@ namespace zuoanqh.UIAL.Engine
         /// </summary>
         public double LengthMilliseconds
         {
-            get => CommonReferences.TicksToMilliseconds(Length, Tempo);
-            set => Length = CommonReferences.MillisecondsToTicks(value, Tempo);
+            get => Constants.TicksToMilliseconds(Length, Tempo);
+            set => Length = Constants.MillisecondsToTicks(value, Tempo);
         }
 
         /// <summary>

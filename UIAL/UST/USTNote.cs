@@ -136,7 +136,7 @@ namespace zuoanqh.UIAL.UST
         /// <param name="Lyric"></param>
         /// <param name="NoteName"></param>
         public USTNote(int Length, string Lyric, string NoteName)
-            : this(Length, Lyric, CommonReferences.NOTENAME_INDEX_UST[NoteName])
+            : this(Length, Lyric, Constants.NoteNameIndexUst[NoteName])
         {
         }
 
@@ -262,8 +262,8 @@ namespace zuoanqh.UIAL.UST
         /// </summary>
         public double VelocityFactor
         {
-            get => CommonReferences.GetEffectiveVelocityFactor(Velocity);
-            set => Velocity = CommonReferences.GetVelocity(value);
+            get => Constants.GetEffectiveVelocityFactor(Velocity);
+            set => Velocity = Constants.GetVelocity(value);
         }
 
         /// <summary>
