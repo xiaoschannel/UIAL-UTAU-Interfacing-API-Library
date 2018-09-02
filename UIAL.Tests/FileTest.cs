@@ -5,14 +5,15 @@ using System.Diagnostics;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using zuoanqh.UIAL.VB;
 using zuoanqh.UIAL.UST;
 using zuoanqh.UIAL.Extensions.Mrq4Cs;
 using zuoanqh.libzut.FileIO;
 using zuoanqh.libzut.Data;
+using zuoanqh.UIAL.VoiceBank;
+
 //using zuoanqh.libzut;
 
-namespace zuoanqh.UIAL.Testing
+namespace zuoanqh.UIAL.Tests
 {
   [TestClass]
   public class FileTest
@@ -31,7 +32,7 @@ namespace zuoanqh.UIAL.Testing
       string otos = Path.Combine(Directory.GetCurrentDirectory(), "dummyOtos");
       List<Oto> lib = new List<Oto>();
 
-      Oto.CHECK_ENCODING = false;
+      Oto.CheckEncoding = false;
       foreach (string s in Directory.GetFiles(otos))
       {
         var o = new Oto(s);

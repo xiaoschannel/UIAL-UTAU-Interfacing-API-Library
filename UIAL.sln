@@ -3,16 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26228.9
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileProcessingSandbox", "FileProcessingSandbox\FileProcessingSandbox.csproj", "{7CC32F21-360F-45AF-A1F2-6AF927C7C3D9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIAL.FileProcessingSandbox", "UIAL.FileProcessingSandbox\UIAL.FileProcessingSandbox.csproj", "{7CC32F21-360F-45AF-A1F2-6AF927C7C3D9}"
 	ProjectSection(ProjectDependencies) = postProject
 		{910B60D0-D6A2-4071-926B-C87EAD305CB2} = {910B60D0-D6A2-4071-926B-C87EAD305CB2}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIAL-Main", "UIAL-Main\UIAL-Main.csproj", "{910B60D0-D6A2-4071-926B-C87EAD305CB2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIAL", "UIAL\UIAL.csproj", "{910B60D0-D6A2-4071-926B-C87EAD305CB2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{E67DD5F0-1A19-4EF0-BDE1-E52D93BBB791}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIAL.Tests", "UIAL.Tests\UIAL.Tests.csproj", "{E67DD5F0-1A19-4EF0-BDE1-E52D93BBB791}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mrq4Cs", "Mrq4Cs\Mrq4Cs.csproj", "{997F0118-28C8-45E5-8C1D-D14FFF0DA3B3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIAL.Extensions.Mrq4Cs", "UIAL.Extensions.Mrq4Cs\UIAL.Extensions.Mrq4Cs.csproj", "{997F0118-28C8-45E5-8C1D-D14FFF0DA3B3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

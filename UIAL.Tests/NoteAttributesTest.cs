@@ -2,7 +2,7 @@
 using zuoanqh.UIAL;
 using zuoanqh.UIAL.UST;
 
-namespace zuoanqh.UIAL.Testing
+namespace zuoanqh.UIAL.Tests
 {
   [TestClass]
   public class NoteAttributesTest
@@ -10,12 +10,12 @@ namespace zuoanqh.UIAL.Testing
     [TestMethod]
     public void TestVelocity()
     {
-      Assert.AreEqual(CommonReferences.GetEffectiveVelocityFactor(0), 2);
-      Assert.AreEqual(CommonReferences.GetEffectiveVelocityFactor(100), 1);
-      Assert.AreEqual(CommonReferences.GetEffectiveVelocityFactor(200), 0.5);
-      Assert.AreEqual(CommonReferences.GetVelocity(2), 0);
-      Assert.AreEqual(CommonReferences.GetVelocity(1), 100);
-      Assert.AreEqual(CommonReferences.GetVelocity(0.5), 200);
+      Assert.AreEqual(Commons.GetEffectiveVelocityFactor(0), 2);
+      Assert.AreEqual(Commons.GetEffectiveVelocityFactor(100), 1);
+      Assert.AreEqual(Commons.GetEffectiveVelocityFactor(200), 0.5);
+      Assert.AreEqual(Commons.GetVelocity(2), 0);
+      Assert.AreEqual(Commons.GetVelocity(1), 100);
+      Assert.AreEqual(Commons.GetVelocity(0.5), 200);
     }
 
     [TestMethod]
@@ -74,20 +74,20 @@ namespace zuoanqh.UIAL.Testing
     public void TestEnvelope()
     {
       Envelope e = new Envelope("0,5,35,0,100,100,0,%,0,10,100");
-      Assert.AreEqual(e.p1, 0);
-      Assert.AreEqual(e.p2, 5);
-      Assert.AreEqual(e.p3, 35);
-      Assert.AreEqual(e.v1, 0);
-      Assert.AreEqual(e.v2, 100);
-      Assert.AreEqual(e.v3, 100);
-      Assert.AreEqual(e.v4, 0);
+      Assert.AreEqual(e.P1, 0);
+      Assert.AreEqual(e.P2, 5);
+      Assert.AreEqual(e.P3, 35);
+      Assert.AreEqual(e.V1, 0);
+      Assert.AreEqual(e.V2, 100);
+      Assert.AreEqual(e.V3, 100);
+      Assert.AreEqual(e.V4, 0);
       Assert.IsTrue(e.HasPercentMark);
       Assert.IsTrue(e.HasP4);
       Assert.IsTrue(e.HasP5);
       Assert.IsTrue(e.HasV5);
-      Assert.AreEqual(e.p4, 0);
-      Assert.AreEqual(e.p5, 10);
-      Assert.AreEqual(e.v5, 100);
+      Assert.AreEqual(e.P4, 0);
+      Assert.AreEqual(e.P5, 10);
+      Assert.AreEqual(e.V5, 100);
 
       e.RemoveP5();
       Assert.IsFalse(e.HasP5);

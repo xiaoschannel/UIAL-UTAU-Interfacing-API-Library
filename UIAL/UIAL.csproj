@@ -7,9 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="libzut">
-      <HintPath>C:\Users\zuoan\Documents\GitHub\zut_CSharp\libzut\bin\Debug\netstandard2.0\libzut.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\Zut\libzut\libzut.csproj" />
   </ItemGroup>
 
 </Project>

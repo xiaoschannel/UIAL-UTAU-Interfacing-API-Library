@@ -2,7 +2,7 @@
 
   <PropertyGroup>    
     <TargetFramework>netcoreapp2.0</TargetFramework>    
-    <RootNamespace>zuoanqh.UIAL.Testing</RootNamespace>
+    <RootNamespace>zuoanqh.UIAL.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -127,8 +127,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Mrq4Cs\Mrq4Cs.csproj" />
-    <ProjectReference Include="..\UIAL-Main\UIAL-Main.csproj" />
+    <ProjectReference Include="..\UIAL\UIAL.csproj" />
+    <ProjectReference Include="..\UIAL.Extensions.Mrq4Cs\UIAL.Extensions.Mrq4Cs.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -137,12 +137,6 @@
 
   <ItemGroup>
     <Folder Include="dummyInstall\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="libzut">
-      <HintPath>C:\Users\zuoan\Documents\GitHub\zut_CSharp\libzut\bin\Debug\netstandard2.0\libzut.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>
