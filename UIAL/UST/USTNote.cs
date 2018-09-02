@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using zuoanqh.libzut;
 using zuoanqh.libzut.Data;
 
 namespace zuoanqh.UIAL.UST
@@ -15,36 +14,43 @@ namespace zuoanqh.UIAL.UST
     ///     grammar itself is fucked up.
     ///     You can handle it yourselves, or add it to the settings.
     /// </summary>
+    // ReSharper disable once InconsistentNaming
     public class USTNote
     {
-        public const string KEY_LENGTH = "Length";
-        public const string KEY_LYRIC = "Lyric";
-        public const string KEY_NOTENUM = "NoteNum";
-        public const string KEY_LABEL = "Label";
+        public const string KeyLength = "Length";
+        public const string KeyLyric = "Lyric";
+        public const string KeyNoteNum = "NoteNum";
+        public const string KeyLabel = "Label";
 
-        public const string KEY_PREUTTERANCE = "PreUtterance";
-        public const string KEY_VOICEOVERLAP = "VoiceOverlap";
-        public const string KEY_STARTPOINT = "StartPoint";
-        public const string KEY_VELOCITY = "Velocity";
-        public const string KEY_INTENSITY = "Intensity";
-        public const string KEY_MODULATION = "Modulation";
-        public const string KEY_TEMPO = "Tempo";
+        public const string KeyPreUtterance = "PreUtterance";
+        public const string KeyVoiceOverlap = "VoiceOverlap";
+        public const string KeyStartPoint = "StartPoint";
+        public const string KeyVelocity = "Velocity";
+        public const string KeyIntensity = "Intensity";
+        public const string KeyModulation = "Modulation";
+        public const string KeyTempo = "Tempo";
 
-        public const string KEY_ENVELOPE = "Envelope";
-        public const string KEY_FLAGS = "Flags";
+        public const string KeyEnvelope = "Envelope";
+        public const string KeyFlags = "Flags";
 
-        public const string KEY_PBS = "PBS";
-        public const string KEY_PBW = "PBW";
-        public const string KEY_PBY = "PBY";
-        public const string KEY_PBM = "PBM";
-        public const string KEY_VBR = "VBR";
+        public const string KeyPbs = "PBS";
+        public const string KeyPbw = "PBW";
+        public const string KeyPby = "PBY";
+        public const string KeyPbm = "PBM";
+        public const string KeyVbr = "VBR";
 
         /// <summary>
         ///     This contains all attribute we know could exist in a note.
         /// </summary>
-        public static readonly IReadOnlyList<string> KNOWN_ATTRIBUTE_NAMES;
+        public static readonly IReadOnlyList<string> KnownAttributeNames = new[]
+        {
+            KeyLength, KeyLyric, KeyNoteNum,
+            KeyLabel, KeyPreUtterance, KeyVoiceOverlap, KeyStartPoint,
+            KeyVelocity, KeyIntensity, KeyModulation, KeyTempo, KeyEnvelope,
+            KeyFlags, KeyPbs, KeyPbw, KeyPby, KeyPbm, KeyVbr
+        };
 
-        private readonly DictionaryDataObject attributes;
+        private readonly DictionaryDataObject _attributes;
 
         /// <summary>
         ///     The envelope of the note. default is "0,5,35,0,100,100,0,%", or new Envelope()
@@ -61,17 +67,6 @@ namespace zuoanqh.UIAL.UST
         /// </summary>
         public Vibrato Vibrato;
 
-        static USTNote()
-        {
-            KNOWN_ATTRIBUTE_NAMES = new[]
-            {
-                KEY_LENGTH, KEY_LYRIC, KEY_NOTENUM,
-                KEY_LABEL, KEY_PREUTTERANCE, KEY_VOICEOVERLAP, KEY_STARTPOINT,
-                KEY_VELOCITY, KEY_INTENSITY, KEY_MODULATION, KEY_TEMPO, KEY_ENVELOPE,
-                KEY_FLAGS, KEY_PBS, KEY_PBW, KEY_PBY, KEY_PBM, KEY_VBR
-            }.ToList();
-        }
-
         //you know what, Maybe I'll just not do these, you can still use attributes.Get.
         ///// <summary>
         ///// This field is deprecated, we did not bother to find out what it means.
@@ -87,56 +82,62 @@ namespace zuoanqh.UIAL.UST
         ///     Create the note from raw text in format of ust files.
         /// </summary>
         /// <param name="list"></param>
-        public USTNote(List<string> list)
+        public USTNote(IEnumerable<string> list)
         {
             //this.TextRaw = list;
-            attributes = new DictionaryDataObject(zusp.ListToDictionary(list, "="));
+            _attributes = new DictionaryDataObject(list.Select(x => x.Split(new[] {'='}, 2))
+                .ToDictionary(x => x[0], x => x[1]));
 
-            Envelope = attributes.ContainsKey(KEY_ENVELOPE) ? new Envelope(attributes[KEY_ENVELOPE]) : new Envelope();
-            attributes.Remove(KEY_ENVELOPE);
+            Envelope = _attributes.ContainsKey(KeyEnvelope) ? new Envelope(_attributes[KeyEnvelope]) : new Envelope();
+            _attributes.Remove(KeyEnvelope);
 
-            if (!attributes.ContainsKey(KEY_PBW))
+            if (!_attributes.ContainsKey(KeyPbw))
             {
                 Portamento = null;
             }
             else
             {
-                var pbw = attributes[KEY_PBW];
-                var pbs = attributes.ContainsKey(KEY_PBS) ? attributes[KEY_PBS] : "0;"; //0 and invalid. 
-                var pby = attributes.ContainsKey(KEY_PBY)
-                    ? attributes[KEY_PBY]
+                var pbw = _attributes[KeyPbw];
+                var pbs = _attributes.ContainsKey(KeyPbs) ? _attributes[KeyPbs] : "0;"; //0 and invalid. 
+                var pby = _attributes.ContainsKey(KeyPby)
+                    ? _attributes[KeyPby]
                     : ""; //pby and pbm will be fixed by Portamento upon construction. 
-                var pbm = attributes.ContainsKey(KEY_PBM) ? attributes[KEY_PBM] : "";
+                var pbm = _attributes.ContainsKey(KeyPbm) ? _attributes[KeyPbm] : "";
                 Portamento = new Portamento(pbw, pbs, pby, pbm);
             }
 
-            Vibrato = attributes.ContainsKey(KEY_VBR) ? new Vibrato(attributes[KEY_VBR]) : null;
-            attributes.Remove(KEY_VBR);
+            Vibrato = _attributes.ContainsKey(KeyVbr) ? new Vibrato(_attributes[KeyVbr]) : null;
+            _attributes.Remove(KeyVbr);
+        }
+
+        /// <inheritdoc />
+        public USTNote(params string[] list) : this(list.AsEnumerable())
+        {
         }
 
         /// <summary>
         ///     make a note with minimum data and default envelope.
         /// </summary>
-        /// <param name="Length"></param>
-        /// <param name="Lyric"></param>
-        /// <param name="NoteNum"></param>
-        public USTNote(int Length, string Lyric, int NoteNum)
+        /// <param name="length"></param>
+        /// <param name="lyric"></param>
+        /// <param name="noteNum"></param>
+        public USTNote(int length, string lyric, int noteNum)
         {
-            attributes = new DictionaryDataObject();
-            this.Length = Length;
-            this.Lyric = Lyric;
-            this.NoteNum = NoteNum;
+            _attributes = new DictionaryDataObject();
+            Length = length;
+            Lyric = lyric;
+            NoteNum = noteNum;
             Envelope = new Envelope();
         }
 
         /// <summary>
         ///     This will convert the NoteName to NoteNum.
         /// </summary>
-        /// <param name="Length"></param>
-        /// <param name="Lyric"></param>
-        /// <param name="NoteName"></param>
-        public USTNote(int Length, string Lyric, string NoteName)
-            : this(Length, Lyric, Constants.NoteNameIndexUst[NoteName])
+        /// <param name="length"></param>
+        /// <param name="lyric"></param>
+        /// <param name="noteName"></param>
+        public USTNote(int length, string lyric, string noteName)
+            : this(length, lyric, Commons.NoteNameIndexUst[noteName])
         {
         }
 
@@ -154,6 +155,26 @@ namespace zuoanqh.UIAL.UST
             //if (another.Vibrato != null) this.Vibrato = new Vibrato(another.Vibrato);
         }
 
+        /// <summary>
+        ///     Make a rest note.
+        /// </summary>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        // ReSharper disable once IntroduceOptionalParameters.Global
+        public USTNote(int length) : this(length, "R", "C3")
+        {
+        }
+
+        /// <summary>
+        ///     Make a note without specifying all the stupid parameters. This will make 240, "あ", "C3".
+        ///     We does not have an empty constructor because it is required a note have that three fields.
+        ///     to preserve encapsulation we can't make an "empty" object.
+        /// </summary>
+        /// <returns></returns>
+        public USTNote() : this(240, "あ", "C3")
+        {
+        }
+
         //This was for debugging. we debugged. it works fine.
         //public List<string> TextRaw;
 
@@ -162,15 +183,15 @@ namespace zuoanqh.UIAL.UST
         ///     Please note you cannot access envelope, portamento or vibrato of the note here.
         ///     If for compatibility reasons you prefer their text format, we have attributes for you.
         /// </summary>
-        public IReadOnlyDictionary<string, string> Attributes => attributes;
+        public IReadOnlyDictionary<string, string> Attributes => _attributes;
 
         /// <summary>
         ///     Must-have attribute. Ticks. Must >= 15.
         /// </summary>
         public int Length
         {
-            get => attributes.GetAsInt(KEY_LENGTH);
-            set => attributes.Set(KEY_PREUTTERANCE, value);
+            get => _attributes.GetAsInt(KeyLength);
+            set => _attributes.Set(KeyPreUtterance, value);
         }
 
         /// <summary>
@@ -178,8 +199,8 @@ namespace zuoanqh.UIAL.UST
         /// </summary>
         public string Lyric
         {
-            get => attributes[KEY_LYRIC];
-            set => attributes.Set(KEY_PREUTTERANCE, value);
+            get => _attributes[KeyLyric];
+            set => _attributes.Set(KeyPreUtterance, value);
         }
 
         /// <summary>
@@ -187,8 +208,8 @@ namespace zuoanqh.UIAL.UST
         /// </summary>
         public int NoteNum
         {
-            get => attributes.GetAsInt(KEY_NOTENUM);
-            set => attributes.Set(KEY_NOTENUM, value);
+            get => _attributes.GetAsInt(KeyNoteNum);
+            set => _attributes.Set(KeyNoteNum, value);
         }
 
         /// <summary>
@@ -196,8 +217,8 @@ namespace zuoanqh.UIAL.UST
         /// </summary>
         public double PreUtterance
         {
-            get => attributes.GetAsDouble(KEY_PREUTTERANCE);
-            set => attributes.Set(KEY_PREUTTERANCE, value);
+            get => _attributes.GetAsDouble(KeyPreUtterance);
+            set => _attributes.Set(KeyPreUtterance, value);
         }
 
         /// <summary>
@@ -205,8 +226,8 @@ namespace zuoanqh.UIAL.UST
         /// </summary>
         public string FlagText
         {
-            get => attributes[KEY_FLAGS];
-            set => attributes.Set(KEY_FLAGS, value);
+            get => _attributes[KeyFlags];
+            set => _attributes.Set(KeyFlags, value);
         }
 
         /// <summary>
@@ -225,8 +246,8 @@ namespace zuoanqh.UIAL.UST
         /// </summary>
         public int Intensity
         {
-            get => attributes.GetAsInt(KEY_INTENSITY);
-            set => attributes.Set(KEY_INTENSITY, value);
+            get => _attributes.GetAsInt(KeyIntensity);
+            set => _attributes.Set(KeyIntensity, value);
         }
 
         /// <summary>
@@ -234,8 +255,8 @@ namespace zuoanqh.UIAL.UST
         /// </summary>
         public int Modulation
         {
-            get => attributes.GetAsInt(KEY_MODULATION);
-            set => attributes.Set(KEY_MODULATION, value);
+            get => _attributes.GetAsInt(KeyModulation);
+            set => _attributes.Set(KeyModulation, value);
         }
 
         /// <summary>
@@ -243,8 +264,8 @@ namespace zuoanqh.UIAL.UST
         /// </summary>
         public double VoiceOverlap
         {
-            get => attributes.GetAsDouble(KEY_VOICEOVERLAP);
-            set => attributes.Set(KEY_VOICEOVERLAP, value);
+            get => _attributes.GetAsDouble(KeyVoiceOverlap);
+            set => _attributes.Set(KeyVoiceOverlap, value);
         }
 
         /// <summary>
@@ -252,8 +273,8 @@ namespace zuoanqh.UIAL.UST
         /// </summary>
         public double Velocity
         {
-            get => attributes.GetAsDouble(KEY_VELOCITY);
-            set => attributes.Set(KEY_VELOCITY, value);
+            get => _attributes.GetAsDouble(KeyVelocity);
+            set => _attributes.Set(KeyVelocity, value);
         }
 
         /// <summary>
@@ -262,8 +283,8 @@ namespace zuoanqh.UIAL.UST
         /// </summary>
         public double VelocityFactor
         {
-            get => Constants.GetEffectiveVelocityFactor(Velocity);
-            set => Velocity = Constants.GetVelocity(value);
+            get => Commons.GetEffectiveVelocityFactor(Velocity);
+            set => Velocity = Commons.GetVelocity(value);
         }
 
         /// <summary>
@@ -275,44 +296,22 @@ namespace zuoanqh.UIAL.UST
             set => Envelope = new Envelope(value);
         }
 
-        /// <summary>
-        ///     Make a rest note.
-        /// </summary>
-        /// <param name="length"></param>
-        /// <returns></returns>
-        public static USTNote MakeR(int length)
-        {
-            return new USTNote(length, "R", "C3");
-        }
-
-        /// <summary>
-        ///     Make a note without specifying all the stupid parameters. This will make 240, "あ", "C3".
-        ///     We does not have an empty constructor because it is required a note have that three fields.
-        ///     to preserve encapsulation we can't make an "empty" object.
-        /// </summary>
-        /// <returns></returns>
-        public static USTNote MakeDefault()
-        {
-            return new USTNote(240, "あ", "C3");
-        }
-
-        public bool IsRest()
-        {
-            return Lyric.Equals("R");
-        }
+        public bool IsRest => Lyric.Equals("R");
 
         /// <summary>
         ///     Converts it back to its ust format.
         /// </summary>
         /// <returns></returns>
-        public List<string> ToStringList()
+        public IEnumerable<string> ToStringList()
         {
-            var ans = new List<string>();
-            ans.AddRange(attributes.ToStringList("="));
-            if (Vibrato != null) ans.Add(Vibrato.ToString());
-            if (Portamento != null) ans.AddRange(Portamento.ToStringList());
-            ans.Add(Envelope.ToString());
-            return ans;
+            foreach (var s in _attributes.ToStringList("=")) yield return s;
+
+            if (Vibrato != null) yield return Vibrato.ToString();
+            if (Portamento != null)
+                foreach (var porta in Portamento.ToStringList())
+                    yield return porta;
+
+            yield return Envelope.ToString();
         }
 
         /// <summary>
@@ -321,7 +320,7 @@ namespace zuoanqh.UIAL.UST
         /// <returns></returns>
         public override string ToString()
         {
-            return string.Join("\r\n", ToStringList().ToArray()) + "\r\n";
+            return string.Join("\r\n", ToStringList()) + "\r\n";
         }
     }
 }

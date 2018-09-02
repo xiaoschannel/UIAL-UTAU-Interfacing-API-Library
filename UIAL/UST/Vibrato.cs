@@ -11,21 +11,12 @@ namespace zuoanqh.UIAL.UST
     public class Vibrato
     {
         /// <summary>
-        ///     The 7 parameters, in order, are: length (% of declared length of note), cycle(ms), depth(cent), in(%), out(%),
-        ///     phase(%), pitch(%).
-        ///     We don't know what the 8th parameter does.
-        ///     pitch is the "y offset", percentage on depth, while phase is the x offset.
-        ///     length works even if it's >100%.
-        /// </summary>
-        public double[] Parameters;
-
-        /// <summary>
         ///     Creates an object using UST format text
         /// </summary>
-        /// <param name="VBRText"></param>
-        public Vibrato(string VBRText)
+        /// <param name="vbrText"></param>
+        public Vibrato(string vbrText)
         {
-            Parameters = zusp.SplitAsIs(VBRText, ",")
+            Parameters = zusp.SplitAsIs(vbrText, ",")
                 .Select(s => s.Equals("") ? 0 : Convert.ToDouble(s))
                 .ToArray();
         }
@@ -42,10 +33,10 @@ namespace zuoanqh.UIAL.UST
         /// <summary>
         ///     Gives a full-length, everything else 0 Vibrato object.
         /// </summary>
-        /// <param name="Cycle"></param>
-        /// <param name="Depth"></param>
-        public Vibrato(double Cycle, double Depth)
-            : this("100 " + Cycle + " " + Depth + " 0 0 0 0 0")
+        /// <param name="cycle"></param>
+        /// <param name="depth"></param>
+        public Vibrato(double cycle, double depth)
+            : this("100 " + cycle + " " + depth + " 0 0 0 0 0")
         {
         }
 
@@ -55,6 +46,15 @@ namespace zuoanqh.UIAL.UST
         public Vibrato() : this("65 180 35 20 20 0 0 0")
         {
         }
+
+        /// <summary>
+        ///     The 7 parameters, in order, are: length (% of declared length of note), cycle(ms), depth(cent), in(%), out(%),
+        ///     phase(%), pitch(%).
+        ///     We don't know what the 8th parameter does.
+        ///     pitch is the "y offset", percentage on depth, while phase is the x offset.
+        ///     length works even if it's >100%.
+        /// </summary>
+        public double[] Parameters { get; }
 
         /// <summary>
         ///     Length in percents. Default is 65.
@@ -156,16 +156,16 @@ namespace zuoanqh.UIAL.UST
         ///     Due to terrible interface given to us, length is required.
         ///     Note this will return 0 if time is outside range, will not throw exceptions.
         /// </summary>
-        /// <param name="AtTime">time since 0%</param>
-        /// <param name="Length">How long is "100%"</param>
+        /// <param name="atTime">time since 0%</param>
+        /// <param name="length">How long is "100%"</param>
         /// <returns></returns>
-        public double Sample(double AtTime, double Length)
+        public double Sample(double atTime, double length)
         {
-            var len = Length * this.Length; //vibrato length in ms
-            var blank = Length - len;
-            if (AtTime < blank || AtTime > Length) return 0; //just some house keeping.
+            var len = length * Length; //vibrato length in ms
+            var blank = length - len;
+            if (atTime < blank || atTime > length) return 0; //just some house keeping.
 
-            var rTime = AtTime - blank; //relative time since start of vibrato.
+            var rTime = atTime - blank; //relative time since start of vibrato.
             var unfaded = Pitch * Depth *
                           Math.Sin((rTime / Cycle + Phase) * zum.PHI); //GO TEAM PHI!!!
 

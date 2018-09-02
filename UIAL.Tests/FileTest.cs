@@ -32,7 +32,7 @@ namespace zuoanqh.UIAL.Tests
       string otos = Path.Combine(Directory.GetCurrentDirectory(), "dummyOtos");
       List<Oto> lib = new List<Oto>();
 
-      Oto.CHECK_ENCODING = false;
+      Oto.CheckEncoding = false;
       foreach (string s in Directory.GetFiles(otos))
       {
         var o = new Oto(s);

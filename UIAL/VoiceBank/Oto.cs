@@ -10,7 +10,7 @@ namespace zuoanqh.UIAL.VoiceBank
         /// <summary>
         ///     This is meant to be true at all time, except for debugging.
         /// </summary>
-        public static bool CHECK_ENCODING = true;
+        public static bool CheckEncoding = true;
 
         public Dictionary<string, OtoAlias> Aliases;
 
@@ -21,13 +21,13 @@ namespace zuoanqh.UIAL.VoiceBank
         {
         }
 
-        public Oto(string[] Data)
+        public Oto(string[] data)
         {
             Aliases = new Dictionary<string, OtoAlias>();
             Extras = new Dictionary<string, List<OtoAlias>>();
 
             AliasesOrdered =
-                Data.Select(s => new OtoAlias(s)).ToArray(); //This will ensure the order from the file is preserved.
+                data.Select(s => new OtoAlias(s)).ToArray(); //This will ensure the order from the file is preserved.
 
             UpdateAliasesAndExtras();
         }
@@ -56,16 +56,16 @@ namespace zuoanqh.UIAL.VoiceBank
                 }
         }
 
-        public OtoAlias GetAlias(string AliasName)
+        public OtoAlias GetAlias(string aliasName)
         {
-            return Aliases[AliasName];
+            return Aliases[aliasName];
         }
 
-        public List<OtoAlias> GetAliases(string AliasName)
+        public List<OtoAlias> GetAliases(string aliasName)
         {
-            var ans = new List<OtoAlias> {Aliases[AliasName]};
-            if (Extras.ContainsKey(AliasName))
-                ans.AddRange(Extras[AliasName]);
+            var ans = new List<OtoAlias> {Aliases[aliasName]};
+            if (Extras.ContainsKey(aliasName))
+                ans.AddRange(Extras[aliasName]);
 
             return ans;
         }
@@ -75,7 +75,7 @@ namespace zuoanqh.UIAL.VoiceBank
             return zusp.GetCommonPostfix(Aliases.Keys.ToList());
         }
 
-        public void ChangeCommonPostfix(string NewPostfix)
+        public void ChangeCommonPostfix(string newPostfix)
         {
             var postfix = GetCommonPostfix();
             foreach (var a in AliasesOrdered)

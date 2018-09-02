@@ -17,90 +17,52 @@ namespace zuoanqh.UIAL.UST
         ///     Write a function with this signature to accompany your designer-made curve type! which you probably wont do but...
         ///     it's there... just saying...
         /// </summary>
-        /// <param name="Time">time relative to beginning.</param>
-        /// <param name="Length">length of the entire segment.</param>
-        /// <param name="Magnitude">relative pitch change in cent.</param>
+        /// <param name="time">time relative to beginning.</param>
+        /// <param name="length">length of the entire segment.</param>
+        /// <param name="magnitude">relative pitch change in cent.</param>
         /// <returns></returns>
-        public delegate double CurveSegmentHandler(double Time, double Length, double Magnitude);
+        public delegate double CurveSegmentHandler(double time, double length, double magnitude);
 
-        public const string PBM_S_CURVE = "", PBM_LINEAR = "s", PBM_R_CURVE = "r", PBM_J_CURVE = "j";
-        public static readonly IReadOnlyList<string> VANILLA_CURVE_TYPES;
+        public const string PbmSCurve = "", PbmLinear = "s", PbmRCurve = "r", PbmJCurve = "j";
+
+        public static readonly IReadOnlyList<string> VanillaCurveTypes = new[]
+            {PbmSCurve, PbmLinear, PbmRCurve, PbmJCurve};
 
         /// <summary>
         ///     Implemented with cosine interpolation.
         /// </summary>
-        public static readonly CurveSegmentHandler SCurveHandler = (Time, Length, Magnitude) =>
-        {
-            //yes. i know. lots of brackets.
-            return (1 - Math.Cos(zum.Bound(Time, 0, Length) / Length)) / 2 * Magnitude;
-        };
+        public static readonly CurveSegmentHandler SCurveHandler = (time, length, magnitude) =>
+            (1 - Math.Cos(zum.Bound(time, 0, length) / length)) / 2 * magnitude;
 
         /// <summary>
         ///     Implemented with linear interpolation.
         /// </summary>
-        public static readonly CurveSegmentHandler LinearHandler = (Time, Length, Magnitude) =>
-        {
-            return zum.Bound(Time, 0, Length) / Length * Magnitude;
-        };
+        public static readonly CurveSegmentHandler LinearHandler = (time, length, magnitude) =>
+            zum.Bound(time, 0, length) / length * magnitude;
 
         /// <summary>
         ///     Gives later half of the S curve
         /// </summary>
-        public static readonly CurveSegmentHandler RCurveHandler = (Time, Length, Magnitude) =>
-        {
-            //yes I'm THAT lazy. 
-            return SCurveHandler(Time + Length, Length * 2, Magnitude * 2) - Magnitude;
-        };
+        public static readonly CurveSegmentHandler RCurveHandler = (time, length, magnitude) =>
+            SCurveHandler(time + length, length * 2, magnitude * 2) - magnitude;
 
         /// <summary>
         ///     Gives first half of the S curve
         /// </summary>
-        public static readonly CurveSegmentHandler JCurveHandler = (Time, Length, Magnitude) =>
-        {
-            return SCurveHandler(Time, Length * 2, Magnitude * 2);
-        };
+        public static readonly CurveSegmentHandler JCurveHandler = (time, length, magnitude) =>
+            SCurveHandler(time, length * 2, magnitude * 2);
 
-        private static readonly Dictionary<string, CurveSegmentHandler> curveTypeHandlers;
-
-        public VirtualArray<string> PBM;
-
-        /// <summary>
-        ///     [0] is the time difference relative to start of note (not envelope, duh)
-        ///     [1] is pitch difference relative to this note in 10-cents.
-        ///     This does not have a valid default and will be NaN if not present when creating the portamento.
-        /// </summary>
-        public double[] PBS;
-
-        /// <summary>
-        ///     All units in ms, default is 0.
-        /// </summary>
-        public VirtualArray<double> PBW;
-
-        /// <summary>
-        ///     All units are in 10-cents
-        /// </summary>
-        public VirtualArray<double> PBY;
-
-        /// <summary>
-        ///     I can't keep the encapsulation because there's one PBY less than other parameters and i don't know how to handle
-        ///     it.
-        ///     So enjoy public members! yay! Good thing is this is the only place data is stored and everything else is
-        ///     functional.
-        ///     By default, last segment will have PBY of 0 just so you know.
-        /// </summary>
-        public List<PortamentoSegment> Segments;
+        // ReSharper disable once InconsistentNaming
+        private static readonly Dictionary<string, CurveSegmentHandler> _curveTypeHandlers =
+            new Dictionary<string, CurveSegmentHandler>();
 
         static Portamento()
         {
-            VANILLA_CURVE_TYPES = new[] {PBM_S_CURVE, PBM_LINEAR, PBM_R_CURVE, PBM_J_CURVE}.ToList();
-
-            curveTypeHandlers = new Dictionary<string, CurveSegmentHandler>();
-
             //adding vanilla curve handlers
-            AddCurveType(PBM_S_CURVE, SCurveHandler);
-            AddCurveType(PBM_LINEAR, LinearHandler);
-            AddCurveType(PBM_R_CURVE, RCurveHandler);
-            AddCurveType(PBM_J_CURVE, JCurveHandler);
+            AddCurveType(PbmSCurve, SCurveHandler);
+            AddCurveType(PbmLinear, LinearHandler);
+            AddCurveType(PbmRCurve, RCurveHandler);
+            AddCurveType(PbmJCurve, JCurveHandler);
         }
 
         /// <summary>
@@ -111,47 +73,47 @@ namespace zuoanqh.UIAL.UST
         ///     it is outside this class or USTNote's power to get information about previous notes, please read UST's constructor
         ///     for its handling.
         /// </summary>
-        /// <param name="PBS"></param>
-        /// <param name="PBW"></param>
-        /// <param name="PBY"></param>
-        /// <param name="PBM"></param>
-        public Portamento(string PBW, string PBS, string PBY, string PBM)
+        /// <param name="pbs"></param>
+        /// <param name="pbw"></param>
+        /// <param name="pby"></param>
+        /// <param name="pbm"></param>
+        public Portamento(string pbw, string pbs, string pby, string pbm)
         {
             Segments = new List<PortamentoSegment>();
 
-            if (PBS == null || PBS.Trim().Length == 0)
+            if (pbs == null || pbs.Trim().Length == 0)
             {
-                this.PBS = new[] {0, double.NaN};
+                Pbs = new[] {0, double.NaN};
             }
             else
             {
-                if (!PBS.Contains(";")) //starting y is 0
+                if (!pbs.Contains(";")) //starting y is 0
                 {
-                    if (!PBS.Contains(",")) //don't you just love working with legendary code
-                        this.PBS = new[] {Convert.ToDouble(PBS), double.NaN};
+                    if (!pbs.Contains(",")) //don't you just love working with legendary code
+                        Pbs = new[] {Convert.ToDouble(pbs), double.NaN};
                     else
-                        this.PBS = zusp.Split(PBS, ",").Select(s => Convert.ToDouble(s)).ToArray();
+                        Pbs = zusp.Split(pbs, ",").Select(s => Convert.ToDouble(s)).ToArray();
                 }
                 else
                 {
-                    this.PBS = zusp.Split(PBS, ";").Select(s => Convert.ToDouble(s)).ToArray();
+                    Pbs = zusp.Split(pbs, ";").Select(s => Convert.ToDouble(s)).ToArray();
                 }
             }
 
-            var w = zusp.SplitAsIs(PBW, ",")
+            var w = zusp.SplitAsIs(pbw, ",")
                 .Select(s => s.Equals("") ? 0 : Convert.ToDouble(s)) //empty entries means 0. 
                 .ToList();
 
-            var y = zusp.SplitAsIs(PBY, ",")
+            var y = zusp.SplitAsIs(pby, ",")
                 .Select(s => s.Equals("") ? 0 : Convert.ToDouble(s)) //why though? i wonder.
                 .ToList();
 
             while (y.Count < w.Count - 1)
                 y.Add(0); //-1 because last point must be 0 as far as utau's concern, which is stupid.
 
-            var m = zusp.SplitAsIs(PBM, ",").ToList();
+            var m = zusp.SplitAsIs(pbm, ",").ToList();
 
-            while (m.Count < w.Count) m.Add(PBM_S_CURVE);
+            while (m.Count < w.Count) m.Add(PbmSCurve);
 
             //initialize segments
             for (var i = 0; i < w.Count - 1; i++) //last segment is a special case.
@@ -159,11 +121,11 @@ namespace zuoanqh.UIAL.UST
             Segments.Add(new PortamentoSegment(w[w.Count - 1], 0, m[w.Count - 1]));
 
             //now fill the virtual arrays.
-            this.PBW = new VirtualArray<double>(i => Segments[i].PBW, (i, v) => Segments[i].PBW = v,
+            Pbw = new VirtualArray<double>(i => Segments[i].Pbw, (i, v) => Segments[i].Pbw = v,
                 () => Segments.Count);
-            this.PBY = new VirtualArray<double>(i => Segments[i].PBY, (i, v) => Segments[i].PBW = v,
+            Pby = new VirtualArray<double>(i => Segments[i].Pby, (i, v) => Segments[i].Pbw = v,
                 () => Segments.Count - 1);
-            this.PBM = new VirtualArray<string>(i => Segments[i].PBM, (i, v) => Segments[i].PBM = v,
+            Pbm = new VirtualArray<string>(i => Segments[i].Pbm, (i, v) => Segments[i].Pbm = v,
                 () => Segments.Count);
         }
 
@@ -172,43 +134,72 @@ namespace zuoanqh.UIAL.UST
         /// </summary>
         /// <param name="that"></param>
         public Portamento(Portamento that)
-            : this(that.PBWText, that.PBSText, that.PBYText, that.PBMText)
+            : this(that.PbwText, that.PbsText, that.PbyText, that.PbmText)
         {
         }
+
+        public VirtualArray<string> Pbm { get; }
+
+        /// <summary>
+        ///     [0] is the time difference relative to start of note (not envelope, duh)
+        ///     [1] is pitch difference relative to this note in 10-cents.
+        ///     This does not have a valid default and will be NaN if not present when creating the portamento.
+        /// </summary>
+        public double[] Pbs { get; }
+
+        /// <summary>
+        ///     All units in ms, default is 0.
+        /// </summary>
+        public VirtualArray<double> Pbw { get; }
+
+        /// <summary>
+        ///     All units are in 10-cents
+        /// </summary>
+        public VirtualArray<double> Pby { get; }
+
+        /// <summary>
+        ///     I can't keep the encapsulation because there's one PBY less than other parameters and i don't know how to handle
+        ///     it.
+        ///     So enjoy public members! yay! Good thing is this is the only place data is stored and everything else is
+        ///     functional.
+        ///     By default, last segment will have PBY of 0 just so you know.
+        /// </summary>
+        public List<PortamentoSegment> Segments { get; }
 
         /// <summary>
         ///     please use add/remove method to edit this.
         /// </summary>
-        public static IReadOnlyDictionary<string, CurveSegmentHandler> CurveTypeHandlers => CurveTypeHandlers;
+        public static IReadOnlyDictionary<string, CurveSegmentHandler> CurveTypeHandlers => _curveTypeHandlers;
 
-        public string PBSText => PBS[0] + ";" + PBS[1];
+        public string PbsText => $"{Pbs[0]};{Pbs[1]}";
 
-        public string PBWText
+        public string PbwText
         {
-            get { return string.Join(" ", PBW.Select(s => s.Equals(0) ? "" : s + "").ToArray()); }
+            get { return string.Join(" ", Pbw.Select(s => s.Equals(0) ? "" : s + "").ToArray()); }
         }
 
-        public string PBYText
+        public string PbyText
         {
-            get { return string.Join(" ", PBY.Select(s => s.Equals(0) ? "" : s + "").ToArray()); }
+            get { return string.Join(" ", Pby.Select(s => s.Equals(0) ? "" : s + "").ToArray()); }
         }
 
-        public string PBMText => string.Join(" ", PBM.ToArray());
+        public string PbmText => string.Join(" ", Pbm.ToArray());
 
         /// <summary>
         ///     Add your own curve type!
         ///     Note your identifier cannot contain space.
         /// </summary>
-        /// <param name="PBMIdentifier"></param>
-        /// <param name="SegmentHandler"></param>
-        public static void AddCurveType(string PBMIdentifier, CurveSegmentHandler SegmentHandler)
+        /// <param name="pbmIdentifier"></param>
+        /// <param name="segmentHandler"></param>
+        public static void AddCurveType(string pbmIdentifier, CurveSegmentHandler segmentHandler)
         {
-            if (curveTypeHandlers.ContainsKey(PBMIdentifier))
-                throw new ArgumentException("You cannot modify existing curve type: " + PBMIdentifier);
-            if (PBMIdentifier.Contains(" "))
-                throw new ArgumentException("Identifier contains space at: " + PBMIdentifier.IndexOf(" "));
+            if (_curveTypeHandlers.ContainsKey(pbmIdentifier))
+                throw new ArgumentException("You cannot modify existing curve type: " + pbmIdentifier);
+            if (pbmIdentifier.Contains(" "))
+                throw new ArgumentException("Identifier contains space at: " +
+                                            pbmIdentifier.IndexOf(" ", StringComparison.Ordinal));
 
-            curveTypeHandlers.Add(PBMIdentifier, SegmentHandler);
+            _curveTypeHandlers.Add(pbmIdentifier, segmentHandler);
         }
 
         /// <summary>
@@ -217,34 +208,34 @@ namespace zuoanqh.UIAL.UST
         ///     i.e. relative pitch difference with previous note in 10-cents
         /// </summary>
         /// <returns></returns>
-        public bool HasValidPBS1()
+        public bool HasValidPbs1()
         {
-            return !double.IsNaN(PBS[1]);
+            return !double.IsNaN(Pbs[1]);
         }
 
         /// <summary>
         ///     Returns the change in a given segment of pitchBend line.
         /// </summary>
-        /// <param name="SegmentIndex">Starts at 0.</param>
+        /// <param name="segmentIndex">Starts at 0.</param>
         /// <returns></returns>
-        private double MagnitudeAt(int SegmentIndex)
+        private double MagnitudeAt(int segmentIndex)
         {
-            if (SegmentIndex == 0) //first point starts at 0
+            if (segmentIndex == 0) //first point starts at 0
             {
-                if (double.IsNaN(PBS[1]))
+                if (double.IsNaN(Pbs[1]))
                     throw new InvalidOperationException("Please provide PBS[1] before sampling.");
-                return PBY[0] - PBS[1];
+                return Pby[0] - Pbs[1];
                 //note this^ does not happen in vanilla, UTAU actually always use previous note's pitch rather than pbs.
                 //Hence PBS[1] actually means nothing except for display purpouse in utau. which is a very bad practice.
                 //By fixing it, we might make some extreme cases sounds differently, but we think this is for the better.
             }
 
-            if (SegmentIndex < PBW.Length - 1) //middle points. segment 1 is between 2nd and 3rd point, or pby's 0 and 1
-                return PBY[SegmentIndex] - PBY[SegmentIndex - 1];
-            if (SegmentIndex == PBW.Length - 1) //last point ends at 0, hence 0 minus last y
-                return -PBY[PBY.Length - 1];
+            if (segmentIndex < Pbw.Length - 1) //middle points. segment 1 is between 2nd and 3rd point, or pby's 0 and 1
+                return Pby[segmentIndex] - Pby[segmentIndex - 1];
+            if (segmentIndex == Pbw.Length - 1) //last point ends at 0, hence 0 minus last y
+                return -Pby[Pby.Length - 1];
 
-            throw new IndexOutOfRangeException("Segment " + SegmentIndex + " does not exist.");
+            throw new IndexOutOfRangeException("Segment " + segmentIndex + " does not exist.");
         }
 
 
@@ -258,16 +249,16 @@ namespace zuoanqh.UIAL.UST
             if (time < 0) return 0; //housekeeping
             var seg = 0; //which segment is the required point located
             var rTime = time; //relative time to start of current interval
-            while (rTime > PBW[seg])
+            while (rTime > Pbw[seg])
             {
-                rTime -= PBW[seg];
+                rTime -= Pbw[seg];
                 seg++;
-                if (seg >= PBW.Length)
+                if (seg >= Pbw.Length)
                     return
                         0; //if we went through the whole thing. no i don't want to write two conditions and check after the loop. too much typing.
             }
 
-            return curveTypeHandlers[PBM[seg]].Invoke(rTime, PBW[seg], MagnitudeAt(seg));
+            return _curveTypeHandlers[Pbm[seg]].Invoke(rTime, Pbw[seg], MagnitudeAt(seg));
         }
 
         /// <summary>
@@ -280,8 +271,8 @@ namespace zuoanqh.UIAL.UST
         {
             var ans = new List<string>
             {
-                USTNote.KEY_PBS + "=" + PBSText, USTNote.KEY_PBW + "=" + PBWText, USTNote.KEY_PBY + "=" + PBYText,
-                USTNote.KEY_PBM + "=" + PBMText
+                USTNote.KeyPbs + "=" + PbsText, USTNote.KeyPbw + "=" + PbwText, USTNote.KeyPby + "=" + PbyText,
+                USTNote.KeyPbm + "=" + PbmText
             };
             return ans;
         }

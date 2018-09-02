@@ -8,7 +8,7 @@ using zuoanqh.libzut.Data;
 
 namespace zuoanqh.UIAL
 {
-    public static class Constants
+    public static class Commons
     {
         /// <summary>
         ///     This seems to be the default for utau.

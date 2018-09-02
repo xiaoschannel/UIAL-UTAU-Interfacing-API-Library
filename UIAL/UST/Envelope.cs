@@ -11,33 +11,28 @@ namespace zuoanqh.UIAL.UST
     /// </summary>
     public class Envelope
     {
-        public static readonly double DEFAULT_V4 = 0;
-        public static readonly double DEFAULT_P5 = 10;
-        public static readonly double DEFAULT_V5 = 100;
-
         /// <summary>
         ///     This is the threshold we consider two v-value equal.
         /// </summary>
-        public static readonly double EPSILON = 0.1;
+        public const double Epsilon = 0.1;
+
+        public static readonly double DefaultV4 = 0;
+        public static readonly double DefaultP5 = 10;
+        public static readonly double DefaultV5 = 100;
 
         /// <summary>
         ///     Encapsulated data.
         /// </summary>
-        private readonly double[] param;
-
-        /// <summary>
-        ///     Please note it seems this does absolutely nothing, so maybe you shouldn't spend time on it.
-        /// </summary>
-        public bool HasPercentMark;
+        private readonly double[] _param;
 
         /// <summary>
         /// </summary>
-        /// <param name="Data">As in UST's format.</param>
-        public Envelope(string Data)
+        /// <param name="data">As in UST's format.</param>
+        public Envelope(string data)
         {
-            param = new double[10];
+            _param = new double[10];
 
-            var ls = zusp.SplitAsIs(Data, ",")
+            var ls = zusp.SplitAsIs(data, ",")
                 .Select(s => s.Trim()).ToArray(); //gotta trim that string
 
             if (ls.Length < 7)
@@ -45,25 +40,21 @@ namespace zuoanqh.UIAL.UST
                     "Malformed envelope, have " + ls.Length + " parts only, requires 7 or more.");
 
             for (var i = 0; i < 7; i++) //7 is where the "%" is
-                param[i] = Convert.ToDouble(ls[i]);
+                _param[i] = Convert.ToDouble(ls[i]);
 
             for (var i = 7; i < 10; i++) //assume there is none of the optionals now
-                param[i] = double.NaN;
+                _param[i] = double.NaN;
 
             if (ls.Length >= 8)
             {
                 HasPercentMark = ls[7].Equals("%");
-                if (ls.Length >= 9) //if there are optionals add them back.
-                {
-                    if (!ls[8].Equals("")) p4 = Convert.ToDouble(ls[8]);
-                    if (ls.Length >= 10)
-                    {
-                        if (!ls[9].Equals("")) p5 = Convert.ToDouble(ls[9]);
-                        if (ls.Length >= 11)
-                            if (!ls[10].Equals(""))
-                                v5 = Convert.ToDouble(ls[10]);
-                    }
-                }
+                if (ls.Length < 9) return;
+                if (!ls[8].Equals("")) P4 = Convert.ToDouble(ls[8]);
+                if (ls.Length < 10) return;
+                if (!ls[9].Equals("")) P5 = Convert.ToDouble(ls[9]);
+                if (ls.Length < 11) return;
+                if (!ls[10].Equals(""))
+                    V5 = Convert.ToDouble(ls[10]);
             }
             else
             {
@@ -87,117 +78,122 @@ namespace zuoanqh.UIAL.UST
         }
 
         /// <summary>
+        ///     Please note it seems this does absolutely nothing, so maybe you shouldn't spend time on it.
+        /// </summary>
+        public bool HasPercentMark { get; }
+
+        /// <summary>
         ///     Please note if a parameter does not exist, it will be NaN.
         ///     Parameters are in the order of p1, p2, p3, v1, v2, v3, v4, p4, p5, v5.
         ///     To get the "raw" data, use ToString().
         ///     To interact with parameters separately, use their name.
         /// </summary>
-        public IReadOnlyList<double> Parameters => param.ToList();
+        public IEnumerable<double> Parameters => _param.ToList();
 
         /// <summary>
         ///     Length of the "blank" before the sound in ms. Default is 0.
         /// </summary>
-        public double p1
+        public double P1
         {
-            get => param[0];
-            set => param[0] = value;
+            get => _param[0];
+            set => _param[0] = value;
         }
 
         /// <summary>
         ///     Volume in percent. Default is 0.
         /// </summary>
-        public double v1
+        public double V1
         {
-            get => param[3];
-            set => param[3] = value;
+            get => _param[3];
+            set => _param[3] = value;
         }
 
         /// <summary>
         ///     Time between p1 and p2 in ms. Default while not meaningful, is 5.
         /// </summary>
-        public double p2
+        public double P2
         {
-            get => param[1];
-            set => param[1] = value;
+            get => _param[1];
+            set => _param[1] = value;
         }
 
         /// <summary>
         ///     Volume in percent. Default is 100.
         /// </summary>
-        public double v2
+        public double V2
         {
-            get => param[4];
-            set => param[4] = value;
+            get => _param[4];
+            set => _param[4] = value;
         }
 
         /// <summary>
         ///     Time before p4 in ms. Default while not meaningful, is 35.
         /// </summary>
-        public double p3
+        public double P3
         {
-            get => param[2];
-            set => param[2] = value;
+            get => _param[2];
+            set => _param[2] = value;
         }
 
         /// <summary>
         ///     Volume in percent. Default is 100.
         /// </summary>
-        public double v3
+        public double V3
         {
-            get => param[5];
-            set => param[5] = value;
+            get => _param[5];
+            set => _param[5] = value;
         }
 
         /// <summary>
         ///     Length of the "blank" at the end in ms. Note this is relative to the length of note this envelope will be applied
         ///     to.
         /// </summary>
-        public double p4
+        public double P4
         {
-            get => param[7];
-            set => param[7] = value;
+            get => _param[7];
+            set => _param[7] = value;
         }
 
-        public bool HasP4 => !double.IsNaN(p4);
+        public bool HasP4 => !double.IsNaN(P4);
 
         /// <summary>
         ///     Volume in percent. Default is 0. Optional (NaN means 0).
         /// </summary>
-        public double v4
+        public double V4
         {
-            get => param[6];
-            set => param[6] = value;
+            get => _param[6];
+            set => _param[6] = value;
         }
 
         /// <summary>
         ///     Time after p2 in ms. Optional (NaN means 0). Default is 10.
         /// </summary>
-        public double p5
+        public double P5
         {
-            get => param[8];
-            set => param[8] = value;
+            get => _param[8];
+            set => _param[8] = value;
         }
 
-        public bool HasP5 => !double.IsNaN(p5);
+        public bool HasP5 => !double.IsNaN(P5);
 
         /// <summary>
         ///     Volume in percent. Default is 100. Optional (NaN means 100).
         /// </summary>
-        public double v5
+        public double V5
         {
-            get => param[9];
-            set => param[9] = value;
+            get => _param[9];
+            set => _param[9] = value;
         }
 
-        public bool HasV5 => !double.IsNaN(v5);
+        public bool HasV5 => !double.IsNaN(V5);
 
         /// <summary>
         ///     This removes p5 from data (rather than set it to default).
         /// </summary>
         public void RemoveP5()
         {
-            p5 = double.NaN;
-            v5 = double.NaN;
+            P5 = double.NaN;
+            V5 = double.NaN;
         }
 
         /// <summary>
@@ -217,21 +213,21 @@ namespace zuoanqh.UIAL.UST
             if (HasP5)
             {
                 if (!HasV5) RemoveP5();
-                if (HasV5 && Math.Abs(v5 - v2) < EPSILON) p5 = 0;
+                if (HasV5 && Math.Abs(V5 - V2) < Epsilon) P5 = 0;
             }
 
-            if (Math.Abs(v2 - v1) < EPSILON) p2 = 0;
-            if (Math.Abs(v3 - v4) < EPSILON) p3 = 0;
+            if (Math.Abs(V2 - V1) < Epsilon) P2 = 0;
+            if (Math.Abs(V3 - V4) < Epsilon) P3 = 0;
         }
 
         /// <summary>
         ///     Check if the envelope is valid given its length in ms.
         /// </summary>
-        /// <param name="Length"></param>
+        /// <param name="length"></param>
         /// <returns></returns>
-        public bool IsValidWith(double Length)
+        public bool IsValidWith(double length)
         {
-            return Length > p1 + p2 + p3 + (HasP4 ? p4 : 0) + (HasP5 ? p5 : 0);
+            return length > P1 + P2 + P3 + (HasP4 ? P4 : 0) + (HasP5 ? P5 : 0);
         }
 
         /// <summary>
@@ -240,10 +236,10 @@ namespace zuoanqh.UIAL.UST
         /// <returns></returns>
         public override string ToString()
         {
-            var l = new List<object> {p1, p2, p3, v1, v2, v3, v4, HasPercentMark ? "%" : ""};
-            var effectiveP4 = HasP4 ? p4 : 0;
-            var effectiveP5 = HasP5 ? p5 : 0;
-            var effectiveV5 = HasV5 ? v5 : 100;
+            var l = new List<object> {P1, P2, P3, V1, V2, V3, V4, HasPercentMark ? "%" : ""};
+            var effectiveP4 = HasP4 ? P4 : 0;
+            var effectiveP5 = HasP5 ? P5 : 0;
+            var effectiveV5 = HasV5 ? V5 : 100;
             if (HasV5)
             {
                 l.Add(effectiveP4);

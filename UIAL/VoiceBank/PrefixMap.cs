@@ -22,14 +22,14 @@ namespace zuoanqh.UIAL.VoiceBank
         /// <summary>
         ///     Create an object with given data. will check if all note names are present.
         /// </summary>
-        /// <param name="Data">
+        /// <param name="data">
         ///     Lines in the file. Yes, you need to turn a file into lines. Because stupid windows store framework
         ///     whatever don't allow main thread to read file
         /// </param>
-        public PrefixMap(string[] Data)
+        public PrefixMap(string[] data)
         {
             Map = new Dictionary<string, string>();
-            var t = Data.Select(s => zusp.Split(s, "\t\t"));
+            var t = data.Select(s => zusp.Split(s, "\t\t"));
             foreach (var p in t) Map.Add(p[0], p[1]);
         }
 
@@ -37,36 +37,36 @@ namespace zuoanqh.UIAL.VoiceBank
         /// <summary>
         ///     Set everything in given range to given mapping, both inclusive.
         /// </summary>
-        /// <param name="From">Note Name</param>
-        /// <param name="To">Note Name</param>
-        /// <param name="Mapping"></param>
-        public void SetRange(string From, string To, string Mapping)
+        /// <param name="from">Note Name</param>
+        /// <param name="to">Note Name</param>
+        /// <param name="mapping"></param>
+        public void SetRange(string from, string to, string mapping)
         {
-            SetRange(Constants.NoteNameIndexRank[From], Constants.NoteNameIndexRank[To], Mapping);
+            SetRange(Commons.NoteNameIndexRank[from], Commons.NoteNameIndexRank[to], mapping);
         }
 
         /// <summary>
         ///     Set everything in given range to given mapping, both inclusive.
         /// </summary>
-        /// <param name="From">Note Name</param>
-        /// <param name="To">Note Name</param>
-        /// <param name="Mapping"></param>
-        private void SetRange(int From, int To, string Mapping)
+        /// <param name="from">Note Name</param>
+        /// <param name="to">Note Name</param>
+        /// <param name="mapping"></param>
+        private void SetRange(int from, int to, string mapping)
         {
             //ensure order because sometimes you want to do C3 to C4, sometimes C4 to C3. ok?
-            if (From > To)
+            if (from > to)
             {
-                From ^= To;
-                To ^= From;
-                From ^= To;
+                from ^= to;
+                to ^= from;
+                from ^= to;
             }
 
-            for (var i = From; i <= To; i++) Map[Constants.NoteNames[i]] = Mapping;
+            for (var i = from; i <= to; i++) Map[Commons.NoteNames[i]] = mapping;
         }
 
         public override string ToString()
         {
-            return string.Join("\r\n", Constants.NoteNames.Reverse().Select(s => s + "\t\t" + Map[s])) + "\r\n";
+            return string.Join("\r\n", Commons.NoteNames.Reverse().Select(s => s + "\t\t" + Map[s])) + "\r\n";
         }
     }
 }

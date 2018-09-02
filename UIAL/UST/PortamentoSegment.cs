@@ -5,15 +5,11 @@
     /// </summary>
     public class PortamentoSegment
     {
-        public string PBM;
-        public double PBW;
-        public double PBY;
-
-        public PortamentoSegment(double PBW, double PBY, string PBM)
+        public PortamentoSegment(double pbw, double pby, string pbm)
         {
-            this.PBW = PBW;
-            this.PBY = PBY;
-            this.PBM = PBM;
+            Pbw = pbw;
+            Pby = pby;
+            Pbm = pbm;
         }
 
         /// <summary>
@@ -22,5 +18,9 @@
         public PortamentoSegment() : this(0, 0, "")
         {
         }
+
+        public string Pbm { get; set; }
+        public double Pbw { get; set; }
+        public double Pby { get; set; }
     }
 }

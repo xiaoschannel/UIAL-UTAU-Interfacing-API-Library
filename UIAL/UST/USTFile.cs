@@ -15,37 +15,26 @@ namespace zuoanqh.UIAL.UST
     ///     if the directory is not absolute, it's the directory relative to UTAU's install directory.
     ///     Also, FUCK SHIFT-JIS
     /// </summary>
+    // ReSharper disable once InconsistentNaming
     public class USTFile
     {
-        public const string KEY_PROJECT_NAME = "ProjectName";
-        public const string KEY_TEMPO = "Tempo";
-        public const string KEY_VOICE_DIR = "VoiceDir";
-        public const string KEY_OUT_FILE = "OutFile";
-        public const string KEY_CACHE_DIR = "CacheDir";
+        public const string KeyProjectName = "ProjectName";
+        public const string KeyTempo = "Tempo";
+        public const string KeyVoiceDir = "VoiceDir";
+        public const string KeyOutFile = "OutFile";
+        public const string KeyCacheDir = "CacheDir";
 
         /// <summary>
         ///     Wavtool, or "append"
         /// </summary>
-        public const string KEY_TOOL1 = "Tool1";
+        public const string KeyTool1 = "Tool1";
 
         /// <summary>
         ///     Resampler, or "resample"
         /// </summary>
-        public const string KEY_TOOL2 = "Tool2";
+        public const string KeyTool2 = "Tool2";
 
-        public const string KEY_MODE2 = "Mode2";
-
-        public DictionaryDataObject ProjectInfo;
-
-        /// <summary>
-        ///     Yes, you can have more than 1 tracks. if you would like to pretend there's only one, use "Notes"
-        /// </summary>
-        public List<List<USTNote>> TrackData;
-
-        /// <summary>
-        ///     Whatever is in [#VERSION] section.
-        /// </summary>
-        public string Version;
+        public const string KeyMode2 = "Mode2";
 
         /// <summary>
         ///     Creates a ust from (absolute or relative) path given.
@@ -62,7 +51,7 @@ namespace zuoanqh.UIAL.UST
         ///     Creates a ust from string array.
         /// </summary>
         /// <param name="data"></param>
-        public USTFile(string[] data)
+        public USTFile(IEnumerable<string> data)
         {
             TrackData = new List<List<USTNote>>();
 
@@ -80,7 +69,7 @@ namespace zuoanqh.UIAL.UST
             //rest of it is notes of this ust.
             for (var i = 2; i < ls.Count; i++)
             {
-                var notenum = i - 2; //LI:when i is 2, it's note 0
+                var noteNum = i - 2; //LI:when i is 2, it's note 0
                 TrackData[0].Add(new USTNote(ls[i]));
             }
 
@@ -91,33 +80,32 @@ namespace zuoanqh.UIAL.UST
             //now we need to fix portamentos if any.
             foreach (var track in TrackData)
                 for (var i = 1; i < track.Count; i++) //sliding window of i-1, i
-                    if (track[i].Portamento != null && !track[i].Portamento.HasValidPBS1()
+                    if (track[i].Portamento != null && !track[i].Portamento.HasValidPbs1()
                     ) //note this is [i-1] - [i] because it's relative to [i]
-                        track[i].Portamento.PBS[1] = track[i - 1].NoteNum - track[i].NoteNum;
+                        track[i].Portamento.Pbs[1] = track[i - 1].NoteNum - track[i].NoteNum;
         }
 
         /// <summary>
         ///     This is sort of a copy constructor. Yes, this will try to make deep copies of everything.
         /// </summary>
-        /// <param name="Version"></param>
-        /// <param name="ProjectInfo"></param>
-        /// <param name="TrackData"></param>
-        public USTFile(string Version, IDictionary<string, string> ProjectInfo, List<List<USTNote>> TrackData)
+        /// <param name="version"></param>
+        /// <param name="projectInfo"></param>
+        /// <param name="trackData"></param>
+        public USTFile(string version, IDictionary<string, string> projectInfo,
+            IEnumerable<IEnumerable<USTNote>> trackData)
         {
-            this.Version = Version;
-            this.ProjectInfo = new DictionaryDataObject(ProjectInfo);
-            this.TrackData = new List<List<USTNote>>();
-            foreach (var t in TrackData)
+            Version = version;
+            ProjectInfo = new DictionaryDataObject(projectInfo);
+            TrackData = new List<List<USTNote>>();
+            foreach (var t in trackData)
             {
-                var myTrack = new List<USTNote>();
-                foreach (var n in t)
-                    myTrack.Add(new USTNote(n));
-                this.TrackData.Add(myTrack);
+                var myTrack = t.Select(n => new USTNote(n)).ToList();
+                TrackData.Add(myTrack);
             }
         }
 
-        public USTFile(string Version, IDictionary<string, string> ProjectInfo, List<USTNote> Notes)
-            : this(Version, ProjectInfo, MakeTrackData(Notes))
+        public USTFile(string version, IDictionary<string, string> projectInfo, IEnumerable<USTNote> notes)
+            : this(version, projectInfo, MakeTrackData(notes))
         {
         }
 
@@ -126,13 +114,25 @@ namespace zuoanqh.UIAL.UST
         {
         }
 
+        public DictionaryDataObject ProjectInfo { get; set; }
+
+        /// <summary>
+        ///     Yes, you can have more than 1 tracks. if you would like to pretend there's only one, use "Notes"
+        /// </summary>
+        public List<List<USTNote>> TrackData { get; set; }
+
+        /// <summary>
+        ///     Whatever is in [#VERSION] section.
+        /// </summary>
+        public string Version { get; set; }
+
         /// <summary>
         ///     Or BPM.
         /// </summary>
         public double Tempo
         {
-            get => ProjectInfo.GetAsDouble(KEY_TEMPO);
-            set => ProjectInfo.Set(KEY_TEMPO, value);
+            get => ProjectInfo.GetAsDouble(KeyTempo);
+            set => ProjectInfo.Set(KeyTempo, value);
         }
 
         /// <summary>
@@ -141,8 +141,8 @@ namespace zuoanqh.UIAL.UST
         //public int Tracks;
         public string ProjectName
         {
-            get => ProjectInfo.Get(KEY_PROJECT_NAME);
-            set => ProjectInfo.Set(KEY_PROJECT_NAME, value);
+            get => ProjectInfo.Get(KeyProjectName);
+            set => ProjectInfo.Set(KeyProjectName, value);
         }
 
         /// <summary>
@@ -150,8 +150,8 @@ namespace zuoanqh.UIAL.UST
         /// </summary>
         public string VoiceDir
         {
-            get => ProjectInfo.Get(KEY_VOICE_DIR);
-            set => ProjectInfo.Set(KEY_VOICE_DIR, value);
+            get => ProjectInfo.Get(KeyVoiceDir);
+            set => ProjectInfo.Set(KeyVoiceDir, value);
         }
 
         /// <summary>
@@ -159,8 +159,8 @@ namespace zuoanqh.UIAL.UST
         /// </summary>
         public string OutFile
         {
-            get => ProjectInfo.Get(KEY_OUT_FILE);
-            set => ProjectInfo.Set(KEY_OUT_FILE, value);
+            get => ProjectInfo.Get(KeyOutFile);
+            set => ProjectInfo.Set(KeyOutFile, value);
         }
 
         /// <summary>
@@ -168,8 +168,8 @@ namespace zuoanqh.UIAL.UST
         /// </summary>
         public string CacheDir
         {
-            get => ProjectInfo.Get(KEY_CACHE_DIR);
-            set => ProjectInfo.Set(KEY_CACHE_DIR, value);
+            get => ProjectInfo.Get(KeyCacheDir);
+            set => ProjectInfo.Set(KeyCacheDir, value);
         }
 
         /// <summary>
@@ -177,8 +177,8 @@ namespace zuoanqh.UIAL.UST
         /// </summary>
         public string Tool1
         {
-            get => ProjectInfo.Get(KEY_TOOL1);
-            set => ProjectInfo.Set(KEY_TOOL1, value);
+            get => ProjectInfo.Get(KeyTool1);
+            set => ProjectInfo.Set(KeyTool1, value);
         }
 
         /// <summary>
@@ -186,8 +186,8 @@ namespace zuoanqh.UIAL.UST
         /// </summary>
         public string Tool2
         {
-            get => ProjectInfo.Get(KEY_TOOL2);
-            set => ProjectInfo.Set(KEY_TOOL2, value);
+            get => ProjectInfo.Get(KeyTool2);
+            set => ProjectInfo.Set(KeyTool2, value);
         }
 
         /// <summary>
@@ -197,8 +197,8 @@ namespace zuoanqh.UIAL.UST
         /// </summary>
         public bool Mode2
         {
-            get => ProjectInfo.GetAsBoolean(KEY_MODE2);
-            set => ProjectInfo.Set(KEY_MODE2, value);
+            get => ProjectInfo.GetAsBoolean(KeyMode2);
+            set => ProjectInfo.Set(KeyMode2, value);
         }
 
         /// <summary>
@@ -218,11 +218,11 @@ namespace zuoanqh.UIAL.UST
         /// <summary>
         ///     Cheap trick to save code. or did i.
         /// </summary>
-        /// <param name="Notes"></param>
+        /// <param name="notes"></param>
         /// <returns></returns>
-        private static List<List<USTNote>> MakeTrackData(List<USTNote> Notes)
+        private static IEnumerable<IEnumerable<USTNote>> MakeTrackData(IEnumerable<USTNote> notes)
         {
-            var l = new List<List<USTNote>> {Notes};
+            var l = new List<IEnumerable<USTNote>> {notes};
             return l;
         }
 
@@ -230,27 +230,26 @@ namespace zuoanqh.UIAL.UST
         ///     Converts it back to its ust format.
         /// </summary>
         /// <returns></returns>
-        public List<string> ToStringList()
+        public IEnumerable<string> ToStringList()
         {
-            var ans = new List<string> {"[#VERSION]", Version, "[#SETTING]"};
-            ans.AddRange(ProjectInfo.ToStringList("="));
+            yield return "[#VERSION]";
+            yield return Version;
+            yield return "[#SETTING]";
+            foreach (var x in ProjectInfo.ToStringList("=")) yield return x;
 
-            foreach (var Notes in TrackData) //adding notes for each track.
+            foreach (var notes in TrackData) //adding notes for each track.
             {
-                for (var i = 0; i < Notes.Count; i++)
+                for (var i = 0; i < notes.Count; i++)
                 {
-                    var n = Notes[i];
-                    var s = "" + i;
-                    while (s.Length < 4) s = "0" + s;
-                    ans.Add("[#" + s + "]");
-                    foreach (var l in n.ToStringList())
-                        ans.Add(l);
+                    var n = notes[i];
+                    var s = $"{i}";
+                    while (s.Length < 4) s = $"0{s}";
+                    yield return $"[#{s}]";
+                    foreach (var x in n.ToStringList()) yield return x;
                 }
 
-                ans.Add("[#TRACKEND]");
+                yield return "[#TRACKEND]";
             }
-
-            return ans;
         }
 
         /// <summary>

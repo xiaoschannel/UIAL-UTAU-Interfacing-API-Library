@@ -36,40 +36,40 @@ namespace zuoanqh.UIAL.Engine
         /// <summary>
         ///     This constructor is used when you have velocity, and can't be bothered to calculate its effect on other parameters.
         /// </summary>
-        /// <param name="OutputFile"></param>
-        /// <param name="InputFile"></param>
-        /// <param name="Length"></param>
-        /// <param name="Tempo"></param>
-        /// <param name="STP"></param>
-        /// <param name="PreUtterance"></param>
-        /// <param name="Overlap"></param>
-        /// <param name="Envelope"></param>
-        /// <param name="Velocity"></param>
-        public WavtoolParameter(string OutputFile, string InputFile, double STP, double Length,
-            double Tempo, double PreUtterance, double Overlap, Envelope Envelope, double Velocity)
-            : this(OutputFile, InputFile, STP * Constants.GetEffectiveVelocityFactor(Velocity),
-                Length, Tempo, PreUtterance * Constants.GetEffectiveVelocityFactor(Velocity),
-                Overlap * Constants.GetEffectiveVelocityFactor(Velocity), Envelope) //now that's a mouthful.
+        /// <param name="outputFile"></param>
+        /// <param name="inputFile"></param>
+        /// <param name="length"></param>
+        /// <param name="tempo"></param>
+        /// <param name="stp"></param>
+        /// <param name="preUtterance"></param>
+        /// <param name="overlap"></param>
+        /// <param name="envelope"></param>
+        /// <param name="velocity"></param>
+        public WavtoolParameter(string outputFile, string inputFile, double stp, double length,
+            double tempo, double preUtterance, double overlap, Envelope envelope, double velocity)
+            : this(outputFile, inputFile, stp * Commons.GetEffectiveVelocityFactor(velocity),
+                length, tempo, preUtterance * Commons.GetEffectiveVelocityFactor(velocity),
+                overlap * Commons.GetEffectiveVelocityFactor(velocity), envelope) //now that's a mouthful.
         {
         }
 
         /// <summary>
         ///     This constructor is used when you have adjusted parameters.
         /// </summary>
-        /// <param name="OutputFile"></param>
-        /// <param name="InputFile"></param>
-        /// <param name="Length"></param>
-        /// <param name="Tempo"></param>
-        /// <param name="STPAdjusted"></param>
-        /// <param name="PreUtteranceAdjusted"></param>
-        /// <param name="OverlapAdjusted"></param>
-        /// <param name="Envelope"></param>
-        public WavtoolParameter(string OutputFile, string InputFile, double STPAdjusted, double Length,
-            double Tempo, double PreUtteranceAdjusted, double OverlapAdjusted, Envelope Envelope)
+        /// <param name="outputFile"></param>
+        /// <param name="inputFile"></param>
+        /// <param name="length"></param>
+        /// <param name="tempo"></param>
+        /// <param name="stpAdjusted"></param>
+        /// <param name="preUtteranceAdjusted"></param>
+        /// <param name="overlapAdjusted"></param>
+        /// <param name="envelope"></param>
+        public WavtoolParameter(string outputFile, string inputFile, double stpAdjusted, double length,
+            double tempo, double preUtteranceAdjusted, double overlapAdjusted, Envelope envelope)
         {
             Args = new List<string>
-                {OutputFile, InputFile, STPAdjusted + "", Length + "@" + Tempo + "+" + PreUtteranceAdjusted};
-            var l = zusp.Split(Envelope.ToString(), ",").ToList();
+                {outputFile, inputFile, stpAdjusted + "", length + "@" + tempo + "+" + preUtteranceAdjusted};
+            var l = zusp.Split(envelope.ToString(), ",").ToList();
             if (l.Count > 7) l.RemoveAt(7); //remove the stupid percent mark
             Args.AddRange(l);
         }
@@ -77,10 +77,10 @@ namespace zuoanqh.UIAL.Engine
         /// <summary>
         ///     Create a new instance with given parameters.
         /// </summary>
-        /// <param name="Args"></param>
-        public WavtoolParameter(List<string> Args)
+        /// <param name="args"></param>
+        public WavtoolParameter(List<string> args)
         {
-            this.Args = Args;
+            Args = args;
         }
 
         /// <summary>
@@ -91,8 +91,8 @@ namespace zuoanqh.UIAL.Engine
             Args = new List<string>(12); //there's 12 parameters + 1 or 3 optional depending on the envelope.
         }
 
-        public WavtoolParameter(string[] Args)
-            : this(Args.ToList())
+        public WavtoolParameter(string[] args)
+            : this(args.ToList())
         {
         }
 
@@ -111,7 +111,7 @@ namespace zuoanqh.UIAL.Engine
             set => Args[1] = value;
         }
 
-        public double STPAdjusted
+        public double StpAdjusted
         {
             get => Convert.ToDouble(Args[2]);
             set => Args[2] = value + "";
@@ -126,43 +126,43 @@ namespace zuoanqh.UIAL.Engine
             set => Args[3] = value;
         }
 
-        public double p1
+        public double P1
         {
             get => Convert.ToDouble(Args[4]);
             set => Args[4] = value + "";
         }
 
-        public double p2
+        public double P2
         {
             get => Convert.ToDouble(Args[5]);
             set => Args[5] = value + "";
         }
 
-        public double p3
+        public double P3
         {
             get => Convert.ToDouble(Args[6]);
             set => Args[6] = value + "";
         }
 
-        public double v1
+        public double V1
         {
             get => Convert.ToDouble(Args[7]);
             set => Args[7] = value + "";
         }
 
-        public double v2
+        public double V2
         {
             get => Convert.ToDouble(Args[8]);
             set => Args[8] = value + "";
         }
 
-        public double v3
+        public double V3
         {
             get => Convert.ToDouble(Args[9]);
             set => Args[9] = value + "";
         }
 
-        public double v4
+        public double V4
         {
             get => Convert.ToDouble(Args[10]);
             set => Args[10] = value + "";
@@ -174,7 +174,7 @@ namespace zuoanqh.UIAL.Engine
             set => Args[11] = value + "";
         }
 
-        public double p4
+        public double P4
         {
             get => Convert.ToDouble(Args[12]);
             set
@@ -186,7 +186,7 @@ namespace zuoanqh.UIAL.Engine
             }
         }
 
-        public double p5
+        public double P5
         {
             get => Convert.ToDouble(Args[12]);
             set
@@ -203,7 +203,7 @@ namespace zuoanqh.UIAL.Engine
             }
         }
 
-        public double v5
+        public double V5
         {
             get => Convert.ToDouble(Args[12]);
             set
@@ -276,8 +276,8 @@ namespace zuoanqh.UIAL.Engine
         /// </summary>
         public double LengthMilliseconds
         {
-            get => Constants.TicksToMilliseconds(Length, Tempo);
-            set => Length = Constants.MillisecondsToTicks(value, Tempo);
+            get => Commons.TicksToMilliseconds(Length, Tempo);
+            set => Length = Commons.MillisecondsToTicks(value, Tempo);
         }
 
         /// <summary>

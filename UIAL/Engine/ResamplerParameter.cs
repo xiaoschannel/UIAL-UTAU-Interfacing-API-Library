@@ -22,10 +22,10 @@ namespace zuoanqh.UIAL.Engine
         /// <summary>
         ///     Create a new instance with given parameters.
         /// </summary>
-        /// <param name="Args"></param>
-        public ResamplerParameter(string[] Args)
+        /// <param name="args"></param>
+        public ResamplerParameter(string[] args)
         {
-            this.Args = Args;
+            Args = args;
         }
 
         /// <summary>
@@ -36,8 +36,8 @@ namespace zuoanqh.UIAL.Engine
             Args = new string[13]; //there's 13 parameters
         }
 
-        public ResamplerParameter(List<string> Args)
-            : this(Args.ToArray())
+        public ResamplerParameter(List<string> args)
+            : this(args.ToArray())
         {
         }
 
@@ -68,8 +68,8 @@ namespace zuoanqh.UIAL.Engine
         /// </summary>
         public int NoteNum
         {
-            get => Constants.NoteNameIndexUst[NoteName];
-            set => NoteName = Constants.GetNoteName(value);
+            get => Commons.NoteNameIndexUst[NoteName];
+            set => NoteName = Commons.GetNoteName(value);
         }
 
         /// <summary>
@@ -83,8 +83,8 @@ namespace zuoanqh.UIAL.Engine
 
         public double VelocityFactor
         {
-            get => Constants.GetEffectiveVelocityFactor(Velocity);
-            set => Velocity = Constants.GetVelocity(value);
+            get => Commons.GetEffectiveVelocityFactor(Velocity);
+            set => Velocity = Commons.GetVelocity(value);
         }
 
         public string FlagText
@@ -182,7 +182,7 @@ namespace zuoanqh.UIAL.Engine
         /// </summary>
         public int[] GetPitchBendArray()
         {
-            return Constants.DecodePitchBends(PitchBendString);
+            return Commons.DecodePitchBends(PitchBendString);
         }
 
         /// <summary>
@@ -191,19 +191,19 @@ namespace zuoanqh.UIAL.Engine
         /// </summary>
         /// <param name="index"></param>
         /// <param name="value"></param>
-        public void SetPitchBend(int Index, int Value)
+        public void SetPitchBend(int index, int value)
         {
-            var array = Constants.DecodePitchBends(PitchBendString);
-            array[Index] = Value;
-            PitchBendString = Constants.EncodePitchBends(array);
+            var array = Commons.DecodePitchBends(PitchBendString);
+            array[index] = value;
+            PitchBendString = Commons.EncodePitchBends(array);
         }
 
         /// <summary>
         /// </summary>
-        /// <param name="NewPitchBends"></param>
-        public void SetPitchBends(int[] NewPitchBends)
+        /// <param name="newPitchBends"></param>
+        public void SetPitchBends(int[] newPitchBends)
         {
-            PitchBendString = Constants.EncodePitchBends(NewPitchBends);
+            PitchBendString = Commons.EncodePitchBends(newPitchBends);
         }
 
         /// <summary>
@@ -211,14 +211,14 @@ namespace zuoanqh.UIAL.Engine
         ///     This is for when you have only the region you want to set.
         ///     if you have the entire array, use SetPitchBends(int[])
         /// </summary>
-        /// <param name="Start">Inclusive.</param>
-        /// <param name="End">Inclusive.</param>
-        /// <param name="PitchBends">the data for that region.</param>
-        public void SetPitchBends(int Start, int End, int[] PitchBends)
+        /// <param name="start">Inclusive.</param>
+        /// <param name="end">Inclusive.</param>
+        /// <param name="pitchBends">the data for that region.</param>
+        public void SetPitchBends(int start, int end, int[] pitchBends)
         {
-            var array = Constants.DecodePitchBends(PitchBendString);
-            for (var i = Start; i <= End; i++) array[i] = PitchBends[i - Start];
-            PitchBendString = Constants.EncodePitchBends(array);
+            var array = Commons.DecodePitchBends(PitchBendString);
+            for (var i = start; i <= end; i++) array[i] = pitchBends[i - start];
+            PitchBendString = Commons.EncodePitchBends(array);
         }
 
         /// <summary>
@@ -226,7 +226,7 @@ namespace zuoanqh.UIAL.Engine
         /// </summary>
         public void RecodePitchBendString()
         {
-            PitchBendString = Constants.EncodePitchBends(Constants.DecodePitchBends(PitchBendString));
+            PitchBendString = Commons.EncodePitchBends(Commons.DecodePitchBends(PitchBendString));
         }
     }
 }

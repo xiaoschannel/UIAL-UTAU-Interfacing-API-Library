@@ -11,13 +11,13 @@ namespace zuoanqh.UIAL.VoiceBank
         /// <summary>
         ///     This would've been private. Please do not bully it.
         /// </summary>
-        public double[] numbers;
+        public double[] Numbers;
 
         public OtoAlias(string s)
         {
             var t = zusp.CutFirst(s, "=");
             var l = zusp.SplitAsIs(t.Second, ",");
-            numbers = l.Skip(1).Select(n => Convert.ToDouble(n)).ToArray();
+            Numbers = l.Skip(1).Select(n => Convert.ToDouble(n)).ToArray();
             //TODO Error Handling: l.length==6
             FName = t.First;
             Alias = l[0];
@@ -25,32 +25,32 @@ namespace zuoanqh.UIAL.VoiceBank
 
         public double Offset
         {
-            get => numbers[0];
-            set => numbers[0] = value;
+            get => Numbers[0];
+            set => Numbers[0] = value;
         }
 
         public double Consonant
         {
-            get => numbers[1];
-            set => numbers[1] = value;
+            get => Numbers[1];
+            set => Numbers[1] = value;
         }
 
         public double Cutoff
         {
-            get => numbers[2];
-            set => numbers[2] = value;
+            get => Numbers[2];
+            set => Numbers[2] = value;
         }
 
-        public double Preutterance
+        public double PreUtterance
         {
-            get => numbers[3];
-            set => numbers[3] = value;
+            get => Numbers[3];
+            set => Numbers[3] = value;
         }
 
         public double Overlap
         {
-            get => numbers[4];
-            set => numbers[4] = value;
+            get => Numbers[4];
+            set => Numbers[4] = value;
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace zuoanqh.UIAL.VoiceBank
             if (n != 0) return n;
             n = (int) (Cutoff - other.Cutoff);
             if (n != 0) return n;
-            n = (int) (Preutterance - other.Preutterance);
+            n = (int) (PreUtterance - other.PreUtterance);
             if (n != 0) return n;
             n = (int) (Overlap - other.Overlap);
             return n;
@@ -83,7 +83,7 @@ namespace zuoanqh.UIAL.VoiceBank
         /// <returns></returns>
         public override string ToString()
         {
-            return string.Format("{0}={1},{2},{3},{4},{5},{6}", FName, Alias, Offset, Consonant, Cutoff, Preutterance,
+            return string.Format("{0}={1},{2},{3},{4},{5},{6}", FName, Alias, Offset, Consonant, Cutoff, PreUtterance,
                 Overlap);
         }
 
