@@ -2,7 +2,7 @@
 using zuoanqh.UIAL;
 using zuoanqh.UIAL.UST;
 
-namespace zuoanqh.UIAL.Testing
+namespace zuoanqh.UIAL.Tests
 {
   [TestClass]
   public class NoteAttributesTest

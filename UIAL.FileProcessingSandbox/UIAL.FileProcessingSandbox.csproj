@@ -38,12 +38,6 @@
     <StartupObject>zuoanqh.UIAL.FileExtraction.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="libzut">
-      <HintPath>C:\Users\zuoanqh\Documents\GitHub\zut\libzut\bin\Debug\netstandard1.4\libzut.dll</HintPath>
-    </Reference>
-    <Reference Include="libzut.win">
-      <HintPath>C:\Users\zuoanqh\Documents\GitHub\zut\zut_win\bin\Debug\libzut.win.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -63,9 +57,17 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\UIAL-Main\UIAL-Main.csproj">
+    <ProjectReference Include="..\UIAL\UIAL.csproj">
       <Project>{910b60d0-d6a2-4071-926b-c87ead305cb2}</Project>
-      <Name>UIAL-Main</Name>
+      <Name>UIAL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Zut\libzut\libzut.csproj">
+      <Project>{0ec94d94-8c42-4594-b0b2-623ce11949ac}</Project>
+      <Name>libzut</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Zut\zut_win\zut_win.csproj">
+      <Project>{a60a21d9-a08c-40bf-b339-9fc506e92ea4}</Project>
+      <Name>zut_win</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -5,14 +5,15 @@ using System.Diagnostics;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using zuoanqh.UIAL.VB;
 using zuoanqh.UIAL.UST;
 using zuoanqh.UIAL.Extensions.Mrq4Cs;
 using zuoanqh.libzut.FileIO;
 using zuoanqh.libzut.Data;
+using zuoanqh.UIAL.VoiceBank;
+
 //using zuoanqh.libzut;
 
-namespace zuoanqh.UIAL.Testing
+namespace zuoanqh.UIAL.Tests
 {
   [TestClass]
   public class FileTest

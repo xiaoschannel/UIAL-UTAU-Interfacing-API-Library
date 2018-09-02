@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using zuoanqh.UIAL.Engine;
 
-namespace zuoanqh.UIAL.Testing
+namespace zuoanqh.UIAL.Tests
 {
   [TestClass]
   public class EngineInterfaceTest
