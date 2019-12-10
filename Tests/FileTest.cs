@@ -57,10 +57,10 @@ namespace zuoanqh.UIAL.Testing
       {
         USTFile f = new USTFile(fp);
         if (f.Notes.Count >= 140)
-          File.Copy(fp, Path.Combine(@"D:\Test UST Archive\Longer 140 Notes", fp.Substring(3).Replace(@"\", "__").Substring(24)));
+          File.Copy(fp, Path.Combine(@"D:\Test UST Archive\Longer 140 Notes", fp.Substring(3).Replace(@"\", "__").Substring(24)), true);
 
         if (f.Notes.Count > 0 && f.Notes.Max((n) => n.Portamento != null && n.Portamento.Segments.Count >= 2))
-          File.Copy(fp, Path.Combine(@"D:\Test UST Archive\Tuned", fp.Substring(3).Replace(@"\", "__").Substring(24)));
+          File.Copy(fp, Path.Combine(@"D:\Test UST Archive\Tuned", fp.Substring(3).Replace(@"\", "__").Substring(24)), true);
       }
     }
 
