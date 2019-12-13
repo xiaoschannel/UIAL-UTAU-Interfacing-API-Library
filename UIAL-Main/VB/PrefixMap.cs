@@ -7,12 +7,14 @@ using System;
 namespace zuoanqh.UIAL.VB
 {
   /// <summary>
-  /// Model for prefix.map file. Please note despite it saying prefix, it is applied as a postfix.
+  /// Model for prefix.map file.
+  /// Note despite it is called prefix, it is applied as a suffix.
+  /// TODO: what is note index rank?
   /// </summary>
   public class PrefixMap
   {
     /// <summary>
-    /// Note Name to Prefix.
+    /// Note name to prefix.
     /// </summary>
     public Dictionary<string, string> Map;
 
@@ -20,9 +22,9 @@ namespace zuoanqh.UIAL.VB
     { }
 
     /// <summary>
-    /// Create an object with given data. will check if all note names are present.
+    /// Create an object with given data. Checks if all note names are present.
     /// </summary>
-    /// <param name="Data">Lines in the file. Yes, you need to turn a file into lines. Because stupid windows store framework whatever don't allow main thread to read file</param>
+    /// <param name="Data">Lines in the file. For windows store compatibility.</param>
     public PrefixMap(string[] Data)
     {
       Map = new Dictionary<string, string>();
@@ -32,10 +34,10 @@ namespace zuoanqh.UIAL.VB
 
 
     /// <summary>
-    /// Set everything in given range to given mapping, both inclusive.
+    /// Set everything in the given range to given mapping, both inclusive.
     /// </summary>
-    /// <param name="From">Note Name</param>
-    /// <param name="To">Note Name</param>
+    /// <param name="From">Note name</param>
+    /// <param name="To">Note name</param>
     /// <param name="Mapping"></param>
     public void SetRange(string From, string To, string Mapping)
     {
@@ -44,12 +46,11 @@ namespace zuoanqh.UIAL.VB
     /// <summary>
     /// Set everything in given range to given mapping, both inclusive.
     /// </summary>
-    /// <param name="From">Note Name</param>
-    /// <param name="To">Note Name</param>
+    /// <param name="From">Note index</param>
+    /// <param name="To">Note index</param>
     /// <param name="Mapping"></param>
     private void SetRange(int From, int To, string Mapping)
     {
-      //ensure order because sometimes you want to do C3 to C4, sometimes C4 to C3. ok?
       if (From > To) { From ^= To; To ^= From; From ^= To; }
 
       for (int i = From; i <= To; i++) Map[CommonReferences.NOTENAMES[i]] = Mapping;

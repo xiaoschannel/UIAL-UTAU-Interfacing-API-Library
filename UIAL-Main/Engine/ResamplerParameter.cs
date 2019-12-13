@@ -5,7 +5,7 @@ using zuoanqh.UIAL.UST;
 namespace zuoanqh.UIAL.Engine
 {
   /// <summary>
-  /// We have referenced parameter meanings from td_fnds's source code here.
+  /// The parameter meanings here are referenced from td_fnds's source code.
   /// 0: input file
   /// 1: output file
   /// 2: note name
@@ -13,7 +13,7 @@ namespace zuoanqh.UIAL.Engine
   /// 4: flags
   /// 5: offset, default VB
   /// 6: length
-  /// (too lazy to continue)
+  /// TODO: describe the rest of the parameters
   /// </summary>
   public class ResamplerParameter
   {
@@ -23,7 +23,7 @@ namespace zuoanqh.UIAL.Engine
     public string OutputFile { get { return Args[1]; } set { Args[1] = value; } }
 
     /// <summary>
-    /// This gives note's note name such as "C3", "F#4".
+    /// This gives the note's "note name" such as "C3", "F#4".
     /// If you want the number in UST file, use "NoteNum", they works the same way.
     /// </summary>
     public string NoteName { get { return Args[2]; } set { Args[2] = value; } }
@@ -73,7 +73,7 @@ namespace zuoanqh.UIAL.Engine
     /// </summary>
     public double Cutoff { get { return Convert.ToDouble(Args[8]); } set { Args[8] = value + ""; } }
     /// <summary>
-    /// for volume, in percentage.
+    /// For volume, in percentage.
     /// </summary>
     public double Intensity { get { return Convert.ToDouble(Args[9]); } set { Args[9] = value + ""; } }
     /// <summary>
@@ -81,22 +81,22 @@ namespace zuoanqh.UIAL.Engine
     /// </summary>
     public double Modulation { get { return Convert.ToDouble(Args[10]); } set { Args[10] = value + ""; } }
     /// <summary>
-    /// There's a ! because there's a !, we don't know why, but everyone's using it that way so we had to do it that way to make it work.
+    /// The purpose of "!" is unclear.
     /// </summary>
     public double Tempo { get { return Convert.ToDouble(Args[11].Substring(1)); } set { Args[11] = "!" + value; } }
     /// <summary>
-    /// To get the processed pitchebnd array, use GetPutchbendArray().
-    /// 
+    /// The encoded raw string. To get the decoded pitchebnd array, use GetPitchbendArray().
     /// </summary>
     public string PitchbendString { get { return Args[12]; } set { Args[12] = value; } }
     /// <summary>
-    /// This decodes the pitchbend string into actual pitchbends in unit of cents, zeroed at given register. They only goes from -2048 to 2048.
+    /// This decodes the pitchbend string into actual pitchbends in unit of cents, zeroed at given register. They only go from -2048 to 2048.
     /// </summary>
     public int[] GetPitchbendArray()
     {return CommonReferences.DecodePitchbends(PitchbendString);    }
     /// <summary>
-    /// Use this if you only change one value in the pitchbend.
-    /// Use "SetPitchbends" for many values.
+    /// Sets the pitchbend value at the given index.
+    /// This modifies the entire string every time.
+    /// Use "SetPitchbends" for efficiently setting many values.
     /// </summary>
     /// <param name="index"></param>
     /// <param name="value"></param>
@@ -107,7 +107,7 @@ namespace zuoanqh.UIAL.Engine
       PitchbendString = CommonReferences.EncodePitchbends(array);
     }
     /// <summary>
-    /// 
+    /// Sets the entire pitchbend for the note.
     /// </summary>
     /// <param name="NewPitchbends"></param>
     public void SetPitchbends(int[] NewPitchbends)
@@ -115,13 +115,12 @@ namespace zuoanqh.UIAL.Engine
       PitchbendString = CommonReferences.EncodePitchbends(NewPitchbends);
     }
     /// <summary>
-    /// Set a region in the original. Start and End both inclusive.
-    /// This is for when you have only the region you want to set.
-    /// if you have the entire array, use SetPitchbends(int[])
+    /// Sets pitchbend between given indicies.
+    /// Use SetPitchbends(int[]) to set the entire array.
     /// </summary>
-    /// <param name="Start">Inclusive.</param>
-    /// <param name="End">Inclusive.</param>
-    /// <param name="Pitchbends">the data for that region.</param>
+    /// <param name="Start">Inclusive</param>
+    /// <param name="End">Inclusive</param>
+    /// <param name="Pitchbends">Pitchbends for the area specified</param>
     public void SetPitchbends(int Start, int End, int[] Pitchbends)
     {
       int[] array = CommonReferences.DecodePitchbends(PitchbendString);
@@ -129,7 +128,8 @@ namespace zuoanqh.UIAL.Engine
       PitchbendString = CommonReferences.EncodePitchbends(array);
     }
     /// <summary>
-    /// This makes it shorter. Don't worry, data will be unchanged.
+    /// Makes the pitchbend string shorter by merging pitchbends of the same pitch.
+    /// TODO: remove side effect of encode/decode
     /// </summary>
     public void RecodePitchbendString()
     {
@@ -150,7 +150,10 @@ namespace zuoanqh.UIAL.Engine
     {
       Args = new string[13];//there's 13 parameters
     }
-
+    /// <summary>
+    /// Create a new instance with given parameters.
+    /// </summary>
+    /// <param name="Args"></param>
     public ResamplerParameter(List<string> Args)
       : this(Args.ToArray())
     { }

@@ -5,9 +5,6 @@ using System.Linq;
 
 namespace zuoanqh.UIAL.UST
 {
-  /// <summary>
-  /// This class models a envelope. While the entire idea is bizarre, I'm putting down some code to hopefully make your life easier.
-  /// </summary>
   public class Envelope
   {
     public static readonly double DEFAULT_V4 = 0;
@@ -35,7 +32,7 @@ namespace zuoanqh.UIAL.UST
     /// </summary>
     public double v1 { get { return param[3]; } set { param[3] = value; } }
     /// <summary>
-    /// Time between p1 and p2 in ms. Default while not meaningful, is 5.
+    /// Time between p1 and p2 in ms. Default is 5.
     /// </summary>
     public double p2 { get { return param[1]; } set { param[1] = value; } }
     /// <summary>
@@ -43,7 +40,7 @@ namespace zuoanqh.UIAL.UST
     /// </summary>
     public double v2 { get { return param[4]; } set { param[4] = value; } }
     /// <summary>
-    /// Time before p4 in ms. Default while not meaningful, is 35.
+    /// Time before p4 in ms. Default is 35.
     /// </summary>
     public double p3 { get { return param[2]; } set { param[2] = value; } }
     /// <summary>
@@ -51,7 +48,8 @@ namespace zuoanqh.UIAL.UST
     /// </summary>
     public double v3 { get { return param[5]; } set { param[5] = value; } }
     /// <summary>
-    /// Length of the "blank" at the end in ms. Note this is relative to the length of note this envelope will be applied to.
+    /// Length of the "blank" at the end in ms.
+    /// Note this is relative to the length of the parent note.
     /// </summary>
     public double p4 { get { return param[7]; } set { param[7] = value; } }
     public bool HasP4 { get { return !double.IsNaN(p4); } }
@@ -61,7 +59,7 @@ namespace zuoanqh.UIAL.UST
     public double v4 { get { return param[6]; } set { param[6] = value; } }
 
     /// <summary>
-    /// Time after p2 in ms. Optional (NaN means 0). Default is 10.
+    /// Time after p2 in ms. Default is 10. Optional (NaN means 0).
     /// </summary>
     public double p5 { get { return param[8]; } set { param[8] = value; } }
     public bool HasP5 { get { return !double.IsNaN(p5); } }
@@ -88,13 +86,13 @@ namespace zuoanqh.UIAL.UST
       throw new NotImplementedException();
     }
     /// <summary>
-    /// This is the threshold we consider two v-value equal.
+    /// This is the threshold we consider two v-values to be equal: 0.1%
     /// </summary>
     public static readonly double EPSILON = 0.1;
 
     /// <summary>
     /// This method tries to zero p values. 
-    /// This can fix some envelope problems, so TRY IT!
+    /// This can fix some envelope problems.
     /// </summary>
     public void ZeroPValues()
     {
@@ -108,12 +106,14 @@ namespace zuoanqh.UIAL.UST
     }
 
     /// <summary>
-    /// Please note it seems this does absolutely nothing, so maybe you shouldn't spend time on it.
+    /// Whether the raw data has a "%".
+    /// The purpose of it is unclear -- Perhaps it is obsolete.
     /// </summary>
     public bool HasPercentMark;
 
     /// <summary>
-    /// Check if the envelope is valid given its length in ms.
+    /// Check if the envelope is valid given its note's length in ms.
+    /// An envelope is valid is the length of envelop is smaller the length of the note.
     /// </summary>
     /// <param name="Length"></param>
     /// <returns></returns>
@@ -123,9 +123,9 @@ namespace zuoanqh.UIAL.UST
     }
 
     /// <summary>
-    /// 
+    /// Creates an object from raw UST data.
     /// </summary>
-    /// <param name="Data">As in UST's format.</param>
+    /// <param name="Data"></param>
     public Envelope(string Data)
     {
       param = new double[10];
@@ -159,20 +159,20 @@ namespace zuoanqh.UIAL.UST
         HasPercentMark = false;
     }
     /// <summary>
-    /// Creates the default envelope used in utau: 0,5,35,0,100,100,0,%
+    /// Creates the default envelope: 0,5,35,0,100,100,0,%
     /// </summary>
     public Envelope() : this("0,5,35,0,100,100,0,%")
     { }
 
     /// <summary>
-    /// (Deep) copy constructor. 
+    /// Creates a deep copy of that envelope.
     /// </summary>
     /// <param name="that"></param>
     public Envelope(Envelope that) : this(that.ToString())
     { }
 
     /// <summary>
-    /// Converts it back to original format.
+    /// Converts the object back to its UST format.
     /// </summary>
     /// <returns></returns>
     public override string ToString()

@@ -7,12 +7,14 @@ using System;
 namespace zuoanqh.UIAL.UST
 {
   /// <summary>
-  /// This class models a note inside a ust. When it comes to ust, we would like to say (again) FUCK SHIFT-JIS. 
-  /// Please note attribute "Envelope", "Portamento" and "Vibrato" was handled by separate, mutable classes.
-  /// You can access their text from here or parsed data from those objects, they do not preserve input, but are more reliable.
-  /// "FlagText" preserves input, while "Flags" works perfectly with all known flags, all unknown flags with parameters,
-  /// but will have problem with unknown no-parameter flags when they are next to another unknown flag because the grammar itself is fucked up. 
+  /// This class models a note inside a ust. 
+  /// Attributes "Envelope", "Portamento" and "Vibrato" are handled by separate, mutable classes due to their complexity.
+  /// You can access their original text from here, or parsed data from those objects. They are more reliable(TODO: Find out what 3-years-ago me meant by this).
+  /// Converting parsed object back to string won't preserve input.
+  /// For flags, "FlagText" preserves input, while "Flags" provides convenience. "Flags"
   /// You can handle it yourselves, or add it to the settings.
+  /// TODO: This comment is too long.
+  /// TODO: Refactor original texts into respective classes
   /// </summary>
   public class USTNote
   {
@@ -39,7 +41,7 @@ namespace zuoanqh.UIAL.UST
     public const string KEY_VBR = "VBR";
 
     /// <summary>
-    /// This contains all attribute we know could exist in a note.
+    /// This contains the name of all known attributes a note can have.
     /// </summary>
     public static readonly IReadOnlyList<string> KNOWN_ATTRIBUTE_NAMES;
 
@@ -52,7 +54,7 @@ namespace zuoanqh.UIAL.UST
     }
 
     /// <summary>
-    /// Make a rest note.
+    /// Create a rest ("R") note.
     /// </summary>
     /// <param name="length"></param>
     /// <returns></returns>
@@ -60,9 +62,9 @@ namespace zuoanqh.UIAL.UST
     { return new USTNote(length, "R", "C3"); }
 
     /// <summary>
-    /// Make a note without specifying all the stupid parameters. This will make 240, "あ", "C3". 
-    /// We does not have an empty constructor because it is required a note have that three fields.
-    /// to preserve encapsulation we can't make an "empty" object.
+    /// Create a note with default parameters.
+    /// This will make a note of length 240, lyric "あ", note name "C3". 
+    /// A note need to have at least these three parameters.
     /// </summary>
     /// <returns></returns>
     public static USTNote MakeDefault()
@@ -70,41 +72,39 @@ namespace zuoanqh.UIAL.UST
       return new USTNote(240, "あ", "C3");
     }
 
-    //This was for debugging. we debugged. it works fine.
+    //for debugging
     //public List<string> TextRaw;
 
     /// <summary>
-    /// Or you can access your attributes this way i guess.... not judging...
+    /// Access the raw text of each attribute with their key.
     /// Please note you cannot access envelope, portamento or vibrato of the note here. 
-    /// If for compatibility reasons you prefer their text format, we have attributes for you.
-    /// 
+    /// Their raw text is available from their respective attributes.
     /// </summary>
     public IReadOnlyDictionary<string, string> Attributes { get { return attributes; } }
-
     private DictionaryDataObject attributes;
 
     /// <summary>
-    /// Must-have attribute. Ticks. Must >= 15.
+    /// Mandatory. Ticks. Must >= 15.
     /// </summary>
     public int Length
     {
       get { return attributes.GetAsInt(KEY_LENGTH); }
-      set { attributes.Set(KEY_PREUTTERANCE, value); }
+      set { attributes.Set(KEY_PREUTTERANCE, value); } // FIXME
     }
 
     /// <summary>
-    /// Must-have (Duh). "R" triple-equals rest. Lyric combined with postfix should be in the oto-aliases.
+    /// Mandatory. "R" means rest. Lyric combined with postfix should be in the oto-aliases.
     /// </summary>
     public string Lyric
     {
       get { return attributes[KEY_LYRIC]; }
-      set { attributes.Set(KEY_PREUTTERANCE, value); }
+      set { attributes.Set(KEY_PREUTTERANCE, value); } // FIXME
     }
     public bool IsRest()
     { return Lyric.Equals("R"); }
 
     /// <summary>
-    /// This ranges from 24(C1) to 107(B7). It's probably the god-damned mathematical convenience working up again.
+    /// Mandatory. Ranges from 24(C1) to 107(B7).
     /// </summary>
     public int NoteNum
     {
@@ -113,7 +113,8 @@ namespace zuoanqh.UIAL.UST
     }
 
     /// <summary>
-    /// Default: empty (VB value). In milliseconds. This will be rounded off to 3 digits after decimal point by UTAU. 
+    /// Default: empty (VB value). In milliseconds. 
+    /// This is rounded off to 3 digits after the decimal point by UTAU.
     /// </summary>
     public double PreUtterance
     {
@@ -122,7 +123,7 @@ namespace zuoanqh.UIAL.UST
     }
 
     /// <summary>
-    /// For a modern user experience, use "Flags" attribute. This is for when things broke.
+    /// For parsed flags, use "Flags" attribute.
     /// </summary>
     public string FlagText
     {
@@ -131,8 +132,7 @@ namespace zuoanqh.UIAL.UST
     }
 
     /// <summary>
-    /// Note Flags class is immutable. to apply (add or update) a flag value, use Flags = Flags.WithFlagValue()
-    /// Yes, this is incredibly inefficient and goes text to flags to text to flags to text to flags for one edit. but it works. what more do you ask?
+    /// Immutable.
     /// </summary>
     public Flags Flags
     {
@@ -141,7 +141,7 @@ namespace zuoanqh.UIAL.UST
     }
 
     /// <summary>
-    /// Percentage. This will be rounded to an integer by UTAU.
+    /// Percentage. This is rounded to an integer by UTAU.
     /// </summary>
     public int Intensity
     {
@@ -149,7 +149,7 @@ namespace zuoanqh.UIAL.UST
       set { attributes.Set(KEY_INTENSITY, value); }
     }
     /// <summary>
-    /// Percentage. This will be rounded to an integer by UTAU.
+    /// Percentage. This is rounded to an integer by UTAU.
     /// </summary>
     public int Modulation
     {
@@ -158,7 +158,7 @@ namespace zuoanqh.UIAL.UST
     }
 
     /// <summary>
-    /// In milliseconds. This will be rounded off to 3 digits after decimal point by UTAU. 
+    /// In milliseconds. This is rounded off to 3 digits after decimal point by UTAU. 
     /// </summary>
     public double VoiceOverlap
     {
@@ -167,7 +167,7 @@ namespace zuoanqh.UIAL.UST
     }
 
     /// <summary>
-    /// This should be between 0 and 200. 
+    /// Must be between 0 and 200. 
     /// </summary>
     public double Velocity
     {
@@ -175,7 +175,8 @@ namespace zuoanqh.UIAL.UST
       set { attributes.Set(KEY_VELOCITY, value); }
     }
     /// <summary>
-    /// This allow you to manipulate the velocity with desired factor value instead. This should be between 0.5 (half as long, fastest) to 2 (twice as long, slowest)
+    /// Manipulate the velocity with the effective factor instead. 
+    /// This should be between 0.5 (half as long, fastest) to 2 (twice as long, slowest)
     /// </summary>
     public double VelocityFactor
     {
@@ -184,6 +185,7 @@ namespace zuoanqh.UIAL.UST
     }
 
     /// <summary>
+    /// TODO: Compatible with what?
     /// This exists for compatibility, it converts the envelope back and forth to strings when you use it.
     /// </summary>
     public string EnvelopeText
@@ -193,33 +195,33 @@ namespace zuoanqh.UIAL.UST
     }
 
     /// <summary>
-    /// The envelope of the note. default is "0,5,35,0,100,100,0,%", or new Envelope()
+    /// Default is "0,5,35,0,100,100,0,%", and can be created by "new Envelope()"
     /// </summary>
     public Envelope Envelope;
 
     /// <summary>
-    /// To access the strings, 
+    /// Can be null. Null means the attribute does not exist.
     /// </summary>
     public Portamento Portamento;
 
     /// <summary>
-    /// This can be null, sorry. null means the attribute does not exist.
+    /// Can be null. Null means the attribute does not exist.
     /// </summary>
     public Vibrato Vibrato;
 
-    //you know what, Maybe I'll just not do these, you can still use attributes.Get.
+    // These exist in older usts. Parsing is to be implemented.
     ///// <summary>
-    ///// This field is deprecated, we did not bother to find out what it means.
+    ///// This field is deprecated. Pitchbend type perhaps?
     ///// </summary>
     //public int PBType;
     //
     ///// <summary>
-    ///// This is for mode 1. (that means you may ignore it) (that means please do ignore it)
+    ///// This is for mode 1 pitchbend.
     ///// </summary>
     //public List<int> Pitches;
 
     /// <summary>
-    /// Create the note from raw text in format of ust files.
+    /// Create a note from text in the format of ust files.
     /// </summary>
     /// <param name="list"></param>
     public USTNote(List<string> list)
@@ -245,7 +247,7 @@ namespace zuoanqh.UIAL.UST
       attributes.Remove(KEY_VBR);
     }
     /// <summary>
-    /// make a note with minimum data and default envelope.
+    /// Create a note with minimum data and a default envelope.
     /// </summary>
     /// <param name="Length"></param>
     /// <param name="Lyric"></param>
@@ -260,7 +262,7 @@ namespace zuoanqh.UIAL.UST
     }
 
     /// <summary>
-    /// This will convert the NoteName to NoteNum.
+    /// Create a note with minimum data and a default envelope, with note name (e.g. "C1") specified instead of "NoteNum" (e.g. 24).
     /// </summary>
     /// <param name="Length"></param>
     /// <param name="Lyric"></param>
@@ -276,7 +278,7 @@ namespace zuoanqh.UIAL.UST
     public USTNote(USTNote another)
       : this(another.ToStringList())
     {
-      //giving up....
+      //TODO: implement this more efficiently
       //this.attributes = new DictionaryDataObject(another.attributes);
       //this.Envelope = new Envelope(another.Envelope);
       //if (another.Portamento != null) this.Portamento = new Portamento(another.Portamento);
@@ -284,7 +286,7 @@ namespace zuoanqh.UIAL.UST
     }
 
     /// <summary>
-    /// Converts it back to its ust format. 
+    /// Converts the note back to its ust format. 
     /// </summary>
     /// <returns></returns>
     public List<string> ToStringList()
@@ -298,7 +300,7 @@ namespace zuoanqh.UIAL.UST
     }
 
     /// <summary>
-    /// Converts it back to its ust format. 
+    /// Converts the note back to its ust format.
     /// </summary>
     /// <returns></returns>
     public override string ToString()

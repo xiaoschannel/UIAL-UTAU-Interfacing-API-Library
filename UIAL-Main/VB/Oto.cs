@@ -9,7 +9,7 @@ namespace zuoanqh.UIAL.VB
   public class Oto
   {
     /// <summary>
-    /// This is meant to be true at all time, except for debugging.
+    /// for debugging
     /// </summary>
     public static bool CHECK_ENCODING = true;
 
@@ -32,7 +32,7 @@ namespace zuoanqh.UIAL.VB
       Aliases = new Dictionary<string, OtoAlias>();
       Extras = new Dictionary<string, List<OtoAlias>>();
 
-      AliasesOrdered = Data.Select((s) => new OtoAlias(s)).ToArray();//This will ensure the order from the file is preserved.
+      AliasesOrdered = Data.Select((s) => new OtoAlias(s)).ToArray();//This ensures the order from the file is preserved.
 
       UpdateAliasesAndExtras();
     }

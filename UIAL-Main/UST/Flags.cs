@@ -8,14 +8,14 @@ using System.Text.RegularExpressions;
 
 namespace zuoanqh.UIAL.UST
 {
-  /// <summary>
-  /// This class is immutable. 
-  /// It tries handles all the nuance with the flag system but will sometimes fail since the system is not perfect.
-  /// We should handle "known" flags perfectly, which contains all the flags from Vanilla, Moresampler, and Utaugrowl.
-  /// You have the liberty to remove flags and replace them with your own, but please be kind.
-  /// When you create an object with a string, ToString() preserves that input.
-  /// </summary>
-  public class Flags
+    /// <summary>
+    /// Since each resampler defines its own flags, there's no one-size-fit-all solution to handling flags.
+    /// The algorithm here should handle flags from Vanilla, Moresampler, and Utaugrowl perfectly.
+    /// Other flags may not be parsed correctly without adding their definitions.
+    /// 
+    /// This class is immutable. 
+    /// </summary>
+    public class Flags
   {
     //public const string KEY_ALL_KNOWN_FLAGS = "Flags.ALL_KNOWN_FLAGS", KEY_NO_PARAMETER_FLAGS = "Flags.NO_PARAMETER_FLAGS";
 
@@ -32,7 +32,7 @@ namespace zuoanqh.UIAL.UST
     private static HashSet<string> noParamFlags;
 
     /// <summary>
-    /// KNOWN_FLAGS with NO_PARAMETER_FLAGS removed. funny name, i know. now stop cringing lol.
+    /// KNOWN_FLAGS with NO_PARAMETER_FLAGS removed. The name could've been better.
     /// </summary>
     public static IReadOnlyCollection<string> YES_PARAMETER_FLAGS { get { return (IReadOnlyCollection<string>)yesParamFlags; } }
     private static HashSet<string> yesParamFlags;
@@ -44,25 +44,29 @@ namespace zuoanqh.UIAL.UST
     {
       //this will make a setting file the first time you run it, but wont change anything if there already is values.
       //which means you can ignore utaugrowl or moresampler's flags if you want.
-
       //SimpleSettings.UseDefaultValue(KEY_ALL_KNOWN_FLAGS, zusp.List(vanilla.Union(moresampler).Union(utaugrowl)));
       //SimpleSettings.UseDefaultValue(KEY_NO_PARAMETER_FLAGS, zusp.List(new string[] { "G", "W", "N", "Me" }));
-      //
       //ALL_KNOWN_FLAGS = zusp.Split(SimpleSettings.GetString(KEY_ALL_KNOWN_FLAGS), ", ").ToList();
       //NO_PARAMETER_FLAGS = zusp.Split(SimpleSettings.GetString(KEY_NO_PARAMETER_FLAGS), ", ").ToList();
+
       allFlags = new HashSet<string>(vanilla.Union(moresampler).Union(utaugrowl));
       noParamFlags = new HashSet<string>(new string[] { "G", "W", "N", "Me" });
       yesParamFlags = new HashSet<string>(allFlags.Except(noParamFlags));
     }
 
     /// <summary>
-    /// Add a bunch of new flags! We do check if they break the existing system though.
-    /// We strongly recommend you do not add no-parameter-flags due to the increasing ambiguity it brings to the system, especially short ones, and use like 1 to mean flag is on or whatever instead.
+    /// Add(define) a bunch of new flags!
+    /// The program checks if they break the existing system.
+    /// 
+    /// Tip:
+    /// No-parameter-flags are bad because they increase the ambiguity during parsing.
+    /// You can convert them to yes-parameter-flags by adding 0 or 1 at the end to indicate on/off.
     /// </summary>
     /// <param name="IgnoreIfExistsAlready"></param>
     /// <param name="NewFlags"></param>
     public static void AddNewNoParamFlags(bool IgnoreIfExistsAlready, params string[] NewFlags)
     {
+      //TODO: format really long lines here
       foreach (string s in NewFlags)
       {
         foreach (string v in noParamFlags)
@@ -70,10 +74,10 @@ namespace zuoanqh.UIAL.UST
           if (!IgnoreIfExistsAlready)
             if (v.Equals(s))
               throw new ArgumentException("Flag already exists: " + s);
-
-          foreach (string v2 in noParamFlags)//so yeah it is n^3, but how many flags are you gonna have? how often you want to add them?
+          //n^3 time complexity is acceptable because the amount of flags is small, and this code is not called very often.
+          foreach (string v2 in noParamFlags)
             if ((s + v2).Equals(v) || (v2 + s).Equals(v))
-              throw new ArgumentException("Flag " + s + " cannot be added because there exists flag [" + v2 + "] that makes another existing flag [" + v + "] ambiguous when combined");//oh the pain of string concatenation
+              throw new ArgumentException("Flag " + s + " cannot be added because there exists flag [" + v2 + "] that makes another existing flag [" + v + "] ambiguous when combined");
         }
 
         foreach (string v in yesParamFlags)
@@ -83,7 +87,7 @@ namespace zuoanqh.UIAL.UST
 
           foreach (string v2 in yesParamFlags)
             if ((s + v2).Equals(v))//v2+s is not a problem even if it exists since v will always be what you mean and what we parse.
-              throw new ArgumentException("Flag " + s + " cannot be added because there exists flag [" + v2 + "] that makes another existing flag [" + v + "] ambiguous when combined");//oh the pain of string concatenation
+              throw new ArgumentException("Flag " + s + " cannot be added because there exists flag [" + v2 + "] that makes another existing flag [" + v + "] ambiguous when combined");
         }
       }//if everything's okay...
 
@@ -92,7 +96,8 @@ namespace zuoanqh.UIAL.UST
     }
 
     /// <summary>
-    /// Add a bunch of new flags! We do check if they break the existing system though.
+    /// Add(define) a bunch of new flags!
+    /// The program checks if they break the existing system.
     /// </summary>
     /// <param name="IgnoreIfExistsAlready"></param>
     /// <param name="NewFlags"></param>
@@ -109,7 +114,7 @@ namespace zuoanqh.UIAL.UST
             throw new ArgumentException("Flag already exists: " + s);
 
           foreach (string v2 in noParamFlags)
-            if ((v2 + s).Equals(v))//which is still simpler than the no-param-flag checking procedure
+            if ((v2 + s).Equals(v))
               throw new ArgumentException("Flag " + s + " cannot be added because there exists flag [" + v2 + "] that makes another existing flag [" + v + "] ambiguous when combined");//oh the pain of string concatenation
         }
       }//if everything's okay...
@@ -119,12 +124,12 @@ namespace zuoanqh.UIAL.UST
     }
 
     /// <summary>
-    /// Note NaN was used as value if a flag does not have parameter.
+    /// Note NaN is used as the value if a flag does not have parameter.
     /// </summary>
     public IReadOnlyList<Pair<string, double>> flags;
 
     /// <summary>
-    /// 
+    /// Raw text of all the flags
     /// </summary>
     public readonly string FlagText;
 
@@ -133,18 +138,14 @@ namespace zuoanqh.UIAL.UST
       foreach (var v in flags)
         if (v.First.Equals(Flag))
           return true;
-      //if not found return false
-      return false;
 
-      //Old implementation
-      //return FlagText.Contains(Flag);
+      //flag not found
+      return false;
     }
 
     /// <summary>
-    /// Return the value of the first occurrence of given flag. This is the value effective for UTAU.
+    /// Return the value of the first occurrence of the given flag. This is the value effective for many resamplers.
     /// This will throw error if we can't find the flag. Use HasFlag first.
-    /// Please note due to there's no formal grammar to flags, This can get messed up.
-    /// To get all the flag values, please STOP THINKING IT :p (because the whole system is crazy enough already)
     /// </summary>
     /// <param name="Flag"></param>
     /// <returns></returns>
@@ -154,16 +155,12 @@ namespace zuoanqh.UIAL.UST
         if (p.First.Equals(Flag)) return p.Second;
 
       throw new ArgumentException("Flag not found.");
-      //old implementation, might have some use so not deleted.
-      //return Convert.ToDouble(zusp.Drop(
-      //    Regex.Match(FlagText, Flag + @"[\+\-\d]+").Value,
-      //    Flag.Length));
     }
 
     /// <summary>
-    /// Creates a new Flags object with given values. If there's multiple values for the same flag, only first will be changed.
-    /// Yes, this creates another object.
-    /// Please note due to there's no formal grammar on flags, This can get messed up.
+    /// Creates a new Flags object containing a flag with given value.
+    /// If the specified flag exists, its value is changed to the given.
+    /// If there are multiple values for the same flag, only the first occourance is changed.
     /// </summary>
     /// <param name="Flag"></param>
     /// <param name="Value"></param>
@@ -187,10 +184,6 @@ namespace zuoanqh.UIAL.UST
         var l = new List<Pair<string, double>>(this.flags) { new Pair<string, double>(Flag, Value) };
         return new Flags(l);
       }
-      //if (HasFlag(Flag))
-      //  return new Flags(FlagText.Replace(Regex.Match(FlagText, Flag + @"[\d]+").Value, Flag + value));
-      //else
-      //  return new Flags(FlagText + Flag + value);
     }
     /// <summary>
     /// Adds a no-parameter flag to this one.
@@ -206,14 +199,15 @@ namespace zuoanqh.UIAL.UST
     }
 
     /// <summary>
-    /// Creates a new Flags object with repeated flags removed.
+    /// Creates a new Flags object without repeated flags.
+    /// For any flag, occourances beyond the first is removed.
     /// </summary>
     /// <returns></returns> 
     public Flags WithoutRepeatedFlags()
     {
       var ans = new List<Pair<string, double>>();
       HashSet<string> addedFlags = new HashSet<string>();
-      //sure, not the most efficient way but works right?
+      //There might be a more efficient way without dynamic allocation
       foreach (var f in flags)
       {
         if (!addedFlags.Contains(f.First))
@@ -227,7 +221,7 @@ namespace zuoanqh.UIAL.UST
     }
 
     /// <summary>
-    /// Creates a new Flags object without flag(s) of (exactly) given name.
+    /// Creates a new Flags object without the specified flag.
     /// </summary>
     /// <param name="Flag"></param>
     /// <returns></returns>
@@ -236,6 +230,11 @@ namespace zuoanqh.UIAL.UST
       return new Flags(flags.Where((s) => !s.First.Equals(Flag)).ToList());
     }
 
+    /// <summary>
+    /// Helper function. Segment a string by chipping away all the known no_parameter_flags at front.
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
     private List<string> SegmentNoParamFlags(string input)
     {
       List<string> ans = new List<string>();
@@ -263,7 +262,7 @@ namespace zuoanqh.UIAL.UST
     }
 
     /// <summary>
-    /// You have no idea how ugly the code looks like in this method :p
+    /// Creates an object from the given flag string.
     /// </summary>
     /// <param name="Flag"></param>
     public Flags(string Flag)
@@ -272,7 +271,7 @@ namespace zuoanqh.UIAL.UST
       var flaglist = new List<Pair<string, double>>();
 
       string fs = Flag.Trim();
-      while (true)//wait for it.....
+      while (true)
       {
         if (fs.Equals("")) break;
         var match = Regex.Match(fs, @"[A-Za-z]+");//extract a letter part that can have multiple flags in it.
@@ -280,7 +279,8 @@ namespace zuoanqh.UIAL.UST
         {
           fs = zusp.Drop(fs, match.Length);//remove the matched part.
           var matched = match.Value;
-          var matchnumbers = Regex.Match(fs, zusp.RegEx.FLOATING_POINT_NUMBER + "|" + zusp.RegEx.INTEGER);//try to extract a floating point number. if fails, try to extract an integer
+          //try to extract a floating point number. if fails, try to extract an integer
+          var matchnumbers = Regex.Match(fs, zusp.RegEx.FLOATING_POINT_NUMBER + "|" + zusp.RegEx.INTEGER);
           if (matchnumbers.Success)
           {
             double flagValue = Convert.ToDouble(matchnumbers.Value);
@@ -305,16 +305,16 @@ namespace zuoanqh.UIAL.UST
               flaglist.Add(new Pair<string, double>(bestMatch, flagValue));
             }
             else
-            {//hmm.... it does not end with any. Let's try to chip away no-parameter flags in the beginning.
-              var v = SegmentNoParamFlags(matched);//this will give us a bunch of no-param flags if any, then the last will be a flag with parameter.
-              for (int i = 0; i < v.Count - 1; i++)//add first ones
+            {
+              var v = SegmentNoParamFlags(matched);//the last will be a flag with parameter.
+              for (int i = 0; i < v.Count - 1; i++)//add first ones as no-param-flag, if any
                 flaglist.Add(new Pair<string, double>(v[i], double.NaN));
-              //add that last.
+              //add last along with params parsed
               flaglist.Add(new Pair<string, double>(v.Last(), flagValue));
             }
           }
           else
-          {//the remainder is all letters. They can be many no-parameter-flag or one.
+          {//the remainder is all letters. add all as no-param-flags
             flaglist.AddRange(SegmentNoParamFlags(matched)
               .Select((s) => new Pair<string, double>(s, double.NaN)));
             break;
@@ -329,12 +329,12 @@ namespace zuoanqh.UIAL.UST
     }
 
     /// <summary>
-    /// Creates an object with no flags.
+    /// Creates an empty object.
     /// </summary>
     public Flags() : this("") { }
 
     /// <summary>
-    /// This can expose internal data representation and wreck things, hence should not be used unless you absolutely know what you're doing.
+    /// Shallow copy constructor.
     /// </summary>
     /// <param name="list"></param>
     private Flags(List<Pair<string, double>> list)
@@ -349,7 +349,7 @@ namespace zuoanqh.UIAL.UST
     }
 
     /// <summary>
-    /// Copy constructor.
+    /// Deep Copy constructor.
     /// </summary>
     /// <param name="Another"></param>
     public Flags(Flags Another)
@@ -357,7 +357,9 @@ namespace zuoanqh.UIAL.UST
       this.flags = new List<Pair<string, double>>(Another.flags);
       this.FlagText = Another.FlagText;
     }
-
+    /// <summary>
+    /// When you create a Flag object with a string, ToString() returns that exact string.
+    /// </summary>
     public override string ToString()
     {//because it's immutable
       return FlagText;

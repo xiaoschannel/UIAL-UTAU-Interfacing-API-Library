@@ -5,14 +5,13 @@ using System.Linq;
 namespace zuoanqh.UIAL.UST
 {
   /// <summary>
-  /// This models a vibrato. 
-  /// Use ToString() to access the string format if you really have to.
+  /// This models a the vibrato of a note. 
   /// </summary>
   public class Vibrato
   {
     /// <summary>
     /// The 7 parameters, in order, are: length (% of declared length of note), cycle(ms), depth(cent), in(%), out(%), phase(%), pitch(%).
-    /// We don't know what the 8th parameter does.
+    /// It's unclear what the 8th parameter does. TODO: find out
     /// pitch is the "y offset", percentage on depth, while phase is the x offset.
     /// length works even if it's >100%.
     /// </summary>
@@ -31,7 +30,7 @@ namespace zuoanqh.UIAL.UST
     /// </summary>
     public double Depth { get { return Parameters[2]; } set { Parameters[2] = value; } }
     /// <summary>
-    /// The linear fade-in part in percents. Default is 20.
+    /// The linear fade-in part. In percentage. Default is 20.
     /// </summary>
     public double In
     {
@@ -39,12 +38,12 @@ namespace zuoanqh.UIAL.UST
       set
       {
         if ((value + Out) > 100)
-          throw new ArgumentException(String.Format("This is highly Illogical. In = {0}%, In + Out = {1}% >100%", value, value + Out));
+          throw new ArgumentException(String.Format("Invalid Parameter. In = {0}%, In + Out = {1}% >100%", value, value + Out));
         Parameters[3] = value;
       }
     }
     /// <summary>
-    /// The linear face-out part in percents. Default is 20.
+    /// The linear face-out part. In percentage. Default is 20.
     /// </summary>
     public double Out
     {
@@ -52,16 +51,17 @@ namespace zuoanqh.UIAL.UST
       set
       {
         if ((value + In) > 100)
-          throw new ArgumentException(String.Format("This is highly Illogical. Out = {0}%, In + Out = {1}% >100%", value, value + In));
+          throw new ArgumentException(String.Format("Invalid Parameter. Out = {0}%, In + Out = {1}% >100%", value, value + In));
         Parameters[4] = value;
       }
     }
     /// <summary>
-    /// The time-axis shift of sine wave, in percents. Default is 20.
+    /// The time-axis shift of the sine wave, in percentage. Default is 20.
     /// </summary>
     public double Phase { get { return Parameters[5]; } set { Parameters[5] = value; } }
     /// <summary>
-    /// The pitch shift of sine wave (why would you want to do this?), in percents (also why percents?), Default is 20.
+    /// The pitch shift of the sine wave (uncommon in practice), in percentage, Default is 20.
+    /// TODO: percentage of WHAT?
     /// </summary>
     public double Pitch { get { return Parameters[6]; } set { Parameters[6] = value; } }
 
@@ -75,7 +75,7 @@ namespace zuoanqh.UIAL.UST
     }
 
     /// <summary>
-    /// Returns the last parameter which is useless AFAIK.
+    /// Returns the last parameter. Its purpose is unclear.
     /// </summary>
     public double EighthParameter { get { return Parameters[7]; } set { Parameters[7] = value; } }
 
@@ -114,7 +114,7 @@ namespace zuoanqh.UIAL.UST
 
     /// <summary>
     /// Returns the magnitude of pitchbend in cents at given time. 
-    /// Due to terrible interface given to us, length is required.
+    /// Since everything is in percentage, the length is required.
     /// Note this will return 0 if time is outside range, will not throw exceptions.
     /// </summary>
     /// <param name="AtTime">time since 0%</param>
@@ -122,6 +122,7 @@ namespace zuoanqh.UIAL.UST
     /// <returns></returns>
     public double Sample(double AtTime, double Length)
     {
+      // TODO: refactor this to work without length and create a wrapper overload
       double len = Length * this.Length;//vibrato length in ms
       double blank = Length - len;
       if (AtTime < blank || AtTime > Length) return 0;//just some house keeping.
