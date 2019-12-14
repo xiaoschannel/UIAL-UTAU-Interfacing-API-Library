@@ -9,7 +9,7 @@ namespace zuoanqh.UIAL.VB
     public string FName, Alias;
 
     /// <summary>
-    /// This would've been private. Please do not bully it.
+    /// This is public for convenience, for now.
     /// </summary>
     public double[] numbers;
 

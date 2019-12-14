@@ -8,15 +8,15 @@ namespace zuoanqh.UIAL.UST
 {
   /// <summary>
   /// Model of a portamento of a note.
-  /// No, we don't preserve input in verbatim, are you crazy?
+  /// The input is not preserved in verbatim.
+  /// TODO: The PBS[1] thing needs to be investigated
   /// </summary>
   public class Portamento
   {
     public const string PBM_S_CURVE = "", PBM_LINEAR = "s", PBM_R_CURVE = "r", PBM_J_CURVE = "j";
     public static readonly IReadOnlyList<string> VANILLA_CURVE_TYPES;
-    //public string PBSAsText;
     /// <summary>
-    /// Write a function with this signature to accompany your designer-made curve type! which you probably wont do but... it's there... just saying...
+    /// Prototype for curve interpolation functions
     /// </summary>
     /// <param name="Time">time relative to beginning.</param>
     /// <param name="Length">length of the entire segment.</param>
@@ -28,7 +28,7 @@ namespace zuoanqh.UIAL.UST
     /// Implemented with cosine interpolation.
     /// </summary>
     public static readonly CurveSegmentHandler SCurveHandler = (Time, Length, Magnitude) =>
-    {//yes. i know. lots of brackets.
+    {
       return ((1 - Math.Cos((zum.Bound(Time, 0, Length) / Length))) / 2) * Magnitude;
     };
 
@@ -44,7 +44,7 @@ namespace zuoanqh.UIAL.UST
     /// Gives later half of the S curve
     /// </summary>
     public static readonly CurveSegmentHandler RCurveHandler = (Time, Length, Magnitude) =>
-    {//yes I'm THAT lazy. 
+    {
       return SCurveHandler(Time + Length, Length * 2, Magnitude * 2) - Magnitude;
     };
 
@@ -57,16 +57,15 @@ namespace zuoanqh.UIAL.UST
     };
 
     /// <summary>
-    /// please use add/remove method to edit this.
+    /// New types can be added through the AddCurveType method.
     /// </summary>
     public static IReadOnlyDictionary<string, CurveSegmentHandler> CurveTypeHandlers { get { return CurveTypeHandlers; } }
     private static Dictionary<string, CurveSegmentHandler> curveTypeHandlers;
 
     /// <summary>
-    /// Add your own curve type! 
-    /// Note your identifier cannot contain space.
+    /// Add your own curve type!
     /// </summary>
-    /// <param name="PBMIdentifier"></param>
+    /// <param name="PBMIdentifier">cannot contain space</param>
     /// <param name="SegmentHandler"></param>
     public static void AddCurveType(string PBMIdentifier, CurveSegmentHandler SegmentHandler)
     {
@@ -84,7 +83,7 @@ namespace zuoanqh.UIAL.UST
 
       curveTypeHandlers = new Dictionary<string, CurveSegmentHandler>();
 
-      //adding vanilla curve handlers
+      //add vanilla curve handlers
       AddCurveType(PBM_S_CURVE, SCurveHandler);
       AddCurveType(PBM_LINEAR, LinearHandler);
       AddCurveType(PBM_R_CURVE, RCurveHandler);
@@ -92,7 +91,7 @@ namespace zuoanqh.UIAL.UST
     }
     /// <summary>
     /// This happens when pbs does not have a second number. 
-    /// To keep everything minimal, we made the design decision you must the correct value, 
+    /// To keep everything minimal, we made the design decision to always have non-empty pbs1, 
     /// i.e. relative pitch difference with previous note in 10-cents
     /// </summary>
     /// <returns></returns>
@@ -101,29 +100,31 @@ namespace zuoanqh.UIAL.UST
 
     public string PBSText { get { return PBS[0] + ";" + PBS[1]; } }
     /// <summary>
-    /// [0] is the time difference relative to start of note (not envelope, duh)
+    /// [0] is the time difference relative to start of note (not envelope)
     /// [1] is pitch difference relative to this note in 10-cents. 
     /// This does not have a valid default and will be NaN if not present when creating the portamento.
     /// </summary>
     public double[] PBS;
 
     /// <summary>
-    /// I can't keep the encapsulation because there's one PBY less than other parameters and i don't know how to handle it.
-    /// So enjoy public members! yay! Good thing is this is the only place data is stored and everything else is functional.
-    /// By default, last segment will have PBY of 0 just so you know.
+    /// This is the actual place data is stored.
+    /// 
+    /// This must be public because there's one PBY less than other parameters -- The last segment will always have a PBY of 0.
     /// </summary> 
     public List<PortamentoSegment> Segments;
     /// <summary>
-    /// All units in ms, default is 0.
+    /// Lengths of pitchbends. All units in ms, default is 0.
     /// </summary>
     public VirtualArray<double> PBW;
     public string PBWText { get { return String.Join(" ", PBW.Select((s) => (s.Equals(0)) ? ("") : (s + "")).ToArray()); } }
     /// <summary>
-    /// All units are in 10-cents
+    /// Magnitude of pitchbends. All units are in 10-cents
     /// </summary>
     public VirtualArray<double> PBY;
     public string PBYText { get { return String.Join(" ", PBY.Select((s) => (s.Equals(0)) ? ("") : (s + "")).ToArray()); } }
-
+    /// <summary>
+    /// Interpolation type (Mode?) identifiers.
+    /// </summary>
     public VirtualArray<string> PBM;
 
     public string PBMText { get { return String.Join(" ", PBM.ToArray()); } }
@@ -135,17 +136,17 @@ namespace zuoanqh.UIAL.UST
     /// <returns></returns>
     private double MagnitudeAt(int SegmentIndex)
     {
-      if (SegmentIndex == 0)//first point starts at 0
+      if (SegmentIndex == 0)//first point starts at 0 pitchbend
       {
         if (double.IsNaN(PBS[1]))
           throw new InvalidOperationException("Please provide PBS[1] before sampling.");
         return PBY[0] - PBS[1];
-        //note this^ does not happen in vanilla, UTAU actually always use previous note's pitch rather than pbs.
-        //Hence PBS[1] actually means nothing except for display purpouse in utau. which is a very bad practice.
-        //By fixing it, we might make some extreme cases sounds differently, but we think this is for the better.
+        //note utau always uses the previous note's pitch rather than pbs[1],
+        //i.e. pbs[1] is always equivalant to 0.
+        //the implementation here trades exact reproducibility with the intended effect of setting pbs[1].
       }
 
-      if (SegmentIndex < PBW.Length - 1)//middle points. segment 1 is between 2nd and 3rd point, or pby's 0 and 1
+      if (SegmentIndex < PBW.Length - 1)//middle points. segment 1 is between the 2nd and 3rd point, or pby's 0 and 1
         return PBY[SegmentIndex] - PBY[SegmentIndex - 1];
       if (SegmentIndex == PBW.Length - 1)//last point ends at 0, hence 0 minus last y
         return -PBY[PBY.Length - 1];
@@ -158,7 +159,8 @@ namespace zuoanqh.UIAL.UST
     /// If you provide empty on the others, we will use the default value:
     /// 0;(invalid) for pbs, 0 for pby, "" or s-curve for pbm
     /// If pbs does not have second parameter, it will be considered invalid as well. 
-    /// it is outside this class or USTNote's power to get information about previous notes, please read UST's constructor for its handling.
+    /// it is outside this class or USTNote's scope to get information on previous notes
+    /// please read UST's constructor for how it's handled.
     /// </summary>
     /// <param name="PBS"></param>
     /// <param name="PBW"></param>
@@ -174,7 +176,7 @@ namespace zuoanqh.UIAL.UST
       {
         if (!PBS.Contains(";"))//starting y is 0
         {
-          if (!PBS.Contains(","))//don't you just love working with legendary code
+          if (!PBS.Contains(","))
             this.PBS = new double[] { Convert.ToDouble(PBS), double.NaN };
           else
             this.PBS = zusp.Split(PBS, ",").Select((s) => Convert.ToDouble(s)).ToArray();
@@ -188,10 +190,10 @@ namespace zuoanqh.UIAL.UST
         .ToList();
 
       var y = zusp.SplitAsIs(PBY, ",")
-        .Select((s) => (s.Equals("")) ? (0) : (Convert.ToDouble(s)))//why though? i wonder.
+        .Select((s) => (s.Equals("")) ? (0) : (Convert.ToDouble(s)))
         .ToList();
 
-      while (y.Count < w.Count - 1) y.Add(0);//-1 because last point must be 0 as far as utau's concern, which is stupid.
+      while (y.Count < w.Count - 1) y.Add(0);//-1 because last point must be 0.
 
       var m = zusp.SplitAsIs(PBM, ",").ToList();
 
@@ -202,7 +204,7 @@ namespace zuoanqh.UIAL.UST
         Segments.Add(new PortamentoSegment(w[i], y[i], m[i]));
       Segments.Add(new PortamentoSegment(w[w.Count - 1], 0, m[w.Count - 1]));
 
-      //now fill the virtual arrays.
+      //fill the virtual arrays
       this.PBW = new VirtualArray<double>((i) => (Segments[i].PBW), (i, v) => Segments[i].PBW = v, () => Segments.Count);
       this.PBY = new VirtualArray<double>((i) => (Segments[i].PBY), (i, v) => Segments[i].PBW = v, () => Segments.Count - 1);
       this.PBM = new VirtualArray<string>((i) => (Segments[i].PBM), (i, v) => Segments[i].PBM = v, () => Segments.Count);
@@ -219,28 +221,27 @@ namespace zuoanqh.UIAL.UST
 
 
     /// <summary>
-    /// Returns magnitude at time with respect to start of the pitchbend.
+    /// Returns magnitude at time with respect to the start of the pitchbend.
     /// </summary>
     /// <param name="time"></param>
     /// <returns></returns>
     public double SampleAtTime(double time)
     {
       if (time < 0) return 0;//housekeeping
-      int seg = 0;//which segment is the required point located
-      double rTime = time;//relative time to start of current interval
+      int seg = 0;//which segment is the requested time located at
+      double rTime = time;//relative time to start of current segment
       while (rTime > PBW[seg])
       {
         rTime -= PBW[seg];
         seg++;
-        if (seg >= PBW.Length) return 0;//if we went through the whole thing. no i don't want to write two conditions and check after the loop. too much typing.
+        if (seg >= PBW.Length) return 0;//error
       }
       return curveTypeHandlers[PBM[seg]].Invoke(rTime, PBW[seg], MagnitudeAt(seg));
     }
-
     /// <summary>
-    /// Converts it back to its ust format. 
-    /// Again, while the data will mean the same, it will look different. 
-    /// Because the using empty string to mean "0" is just not very readable.
+    /// Converts each part of this Portamento back to its ust format.
+    /// Since empty is recorded as 0 internally, this does not reproduce the string used to create the object.
+    /// It will however, always be functionally equivalent.
     /// </summary>
     /// <returns></returns>
     public List<string> ToStringList()
@@ -249,6 +250,12 @@ namespace zuoanqh.UIAL.UST
       return ans;
     }
 
+    /// <summary>
+    /// Converts it back to its ust format. 
+    /// Since empty is recorded as 0 internally, this does not reproduce the string used to create the object.
+    /// It will however, always be functionally equivalent.
+    /// </summary>
+    /// <returns></returns>
     public override string ToString()
     {
       return String.Join("\r\n", ToStringList().ToArray()) + "\r\n";

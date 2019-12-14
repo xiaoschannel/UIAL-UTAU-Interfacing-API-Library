@@ -1,12 +1,21 @@
 ﻿namespace zuoanqh.UIAL.UST
 {
   /// <summary>
-  /// A data class that hopefully makes your life easier. 
+  /// A data class. 
   /// </summary>
   public class PortamentoSegment
   {
+    /// <summary>
+    /// Length
+    /// </summary>
     public double PBW;
+    /// <summary>
+    /// Pitchbend
+    /// </summary>
     public double PBY;
+    /// <summary>
+    /// Curve Type Identifier
+    /// </summary>
     public string PBM;
 
     public PortamentoSegment(double PBW, double PBY, string PBM)

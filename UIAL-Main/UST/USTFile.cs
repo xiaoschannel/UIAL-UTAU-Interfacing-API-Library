@@ -12,8 +12,8 @@ namespace zuoanqh.UIAL.UST
   /// Note: 
   /// %HOME% means the current user's home directory.
   /// %VOICE% is the voicebank directory set in tools->option->path.
-  /// if the directory is not absolute, it's the directory relative to UTAU's install directory.
-  /// Also, FUCK SHIFT-JIS
+  /// Relative path is possible.
+  /// Seriously, FUCK SHIFT-JIS
   /// </summary>
   public class USTFile
   {
@@ -33,7 +33,7 @@ namespace zuoanqh.UIAL.UST
     public const string KEY_MODE2 = "Mode2";
 
     /// <summary>
-    /// Whatever is in [#VERSION] section. 
+    /// Whatever is in the [#VERSION] section. 
     /// </summary>
     public string Version;
 
@@ -41,22 +41,9 @@ namespace zuoanqh.UIAL.UST
     /// Or BPM.
     /// </summary>
     public double Tempo { get { return ProjectInfo.GetAsDouble(KEY_TEMPO); } set { ProjectInfo.Set(KEY_TEMPO, value); } }
-    /// <summary>
-    /// Note this is useless on windows. we do however, provide a method converting multi-track files to multiple usts.
-    /// </summary>
-    //public int Tracks;
     public string ProjectName { get { return ProjectInfo.Get(KEY_PROJECT_NAME); } set { ProjectInfo.Set(KEY_PROJECT_NAME, value); } }
-    /// <summary>
-    /// See class comment for directory meaning.
-    /// </summary>
     public string VoiceDir { get { return ProjectInfo.Get(KEY_VOICE_DIR); } set { ProjectInfo.Set(KEY_VOICE_DIR, value); } }
-    /// <summary>
-    /// See class comment for directory meaning.
-    /// </summary>
     public string OutFile { get { return ProjectInfo.Get(KEY_OUT_FILE); } set { ProjectInfo.Set(KEY_OUT_FILE, value); } }
-    /// <summary>
-    /// See class comment for directory meaning.
-    /// </summary>
     public string CacheDir { get { return ProjectInfo.Get(KEY_CACHE_DIR); } set { ProjectInfo.Set(KEY_CACHE_DIR, value); } }
     /// <summary>
     /// The wavtool used.
@@ -73,7 +60,8 @@ namespace zuoanqh.UIAL.UST
     public bool Mode2 { get { return ProjectInfo.GetAsBoolean(KEY_MODE2); } set { ProjectInfo.Set(KEY_MODE2, value); } }
 
     /// <summary>
-    /// Yes, you can have more than 1 tracks. if you would like to pretend there's only one, use "Notes"
+    /// Ust supports multiple tracks. For convenience dealing with single-track file, use "Notes".
+    /// Note: The UTAU editor on Mac supports this natively, while on Windows it's supported through plugins.
     /// </summary>
     public List<List<USTNote>> TrackData;
     /// <summary>
@@ -94,42 +82,44 @@ namespace zuoanqh.UIAL.UST
 
     /// <summary>
     /// Creates a ust from (absolute or relative) path given.
-    /// Note: Emperically, we found 8kb to be as good as whole file.
     /// </summary>
     /// <param name="fPath"></param>
-    public USTFile(string fPath) //
+    public USTFile(string fPath) // For UDE, we found 8kb to be as good as whole file emperically.
       : this(ByLineFileIO.ReadFileNoWhitespace(fPath, zuio.GetEncUde(fPath,8192, Encoding.GetEncoding("Shift_JIS"))).ToArray())
     { }
 
     /// <summary>
     /// Creates a ust from string array.
     /// </summary>
-    /// <param name="data"></param>
+    /// <param name="data">lines of a file</param>
     public USTFile(string[] data)
     {
       TrackData = new List<List<USTNote>>();
 
-      //split by tracks first. yes, that exists.
-      //thank you c# for providing @.. escaping more escape character is just...
+      //Split by tracks first.
+      //This split version and project info into the first track, so we'll deal with that first
+      //TODO: Refactor this
       List<List<string>> tracks = zusp.ListSplit(data.ToList(), @"\[#TRACKEND\]");
+      //Split lines into segments.
       List<List<string>> ls = zusp.ListSplit(tracks[0], @"\[#.*\]");
 
-      //ls[0] is ust version, we only handled the newest.
+      //The first segment is ust format version, we only handled the newest.
       Version = ls[0][0];
-      //ls[1] is other project info
+      //The next segment is project info
       ProjectInfo = new DictionaryDataObject(zusp.ListToDictionary(ls[1], "="));
 
       TrackData.Add(new List<USTNote>());
-      //rest of it is notes of this ust.
+      //The remaining segments are notes
       for (int i = 2; i < ls.Count; i++)
       {
         int notenum = i - 2; //LI:when i is 2, it's note 0
         TrackData[0].Add(new USTNote(ls[i]));
       }
-      if (tracks.Count > 1)//yes there can be more than 1 tracks. not on windows versions though!
-        foreach (var t in tracks.Skip(1))//much better code after those special cases are gone now...
+      if (tracks.Count > 1) //Handle the other tracks
+        foreach (var t in tracks.Skip(1))
           TrackData.Add(zusp.ListSplit(t, @"\[*\]").Select((n) => new USTNote(n)).ToList());
 
+      //TODO: deal with this
       //now we need to fix portamentos if any.
       foreach (var track in TrackData)
         for (int i = 1; i < track.Count; i++)//sliding window of i-1, i
@@ -138,7 +128,7 @@ namespace zuoanqh.UIAL.UST
     }
 
     /// <summary>
-    /// This is sort of a copy constructor. Yes, this will try to make deep copies of everything.
+    /// Copy-construct a new USTFile from multiple tracks
     /// </summary>
     /// <param name="Version"></param>
     /// <param name="ProjectInfo"></param>
@@ -158,7 +148,7 @@ namespace zuoanqh.UIAL.UST
     }
 
     /// <summary>
-    /// Cheap trick to save code. or did i.
+    /// Converts a single track to multiple tracks
     /// </summary>
     /// <param name="Notes"></param>
     /// <returns></returns>
@@ -167,7 +157,12 @@ namespace zuoanqh.UIAL.UST
       var l = new List<List<USTNote>> { Notes };
       return l;
     }
-
+    /// <summary>
+    /// Copy-construct a new USTFile from a single track.
+    /// </summary>
+    /// <param name="Version"></param>
+    /// <param name="ProjectInfo"></param>
+    /// <param name="Notes"></param>
     public USTFile(string Version, IDictionary<string, string> ProjectInfo, List<USTNote> Notes)
       : this(Version, ProjectInfo, MakeTrackData(Notes))
     { }
@@ -177,7 +172,7 @@ namespace zuoanqh.UIAL.UST
     { }
 
     /// <summary>
-    /// Converts it back to its ust format. 
+    /// Converts it back to its ust format in lines.
     /// </summary>
     /// <returns></returns>
     public List<string> ToStringList()
@@ -202,7 +197,7 @@ namespace zuoanqh.UIAL.UST
     }
 
     /// <summary>
-    /// Converts it back to its ust format. 
+    /// Converts it back to its ust format in a single, gigantic string.
     /// </summary>
     /// <returns></returns>
     public override string ToString()

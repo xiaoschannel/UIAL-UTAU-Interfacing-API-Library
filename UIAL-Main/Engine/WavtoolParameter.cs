@@ -7,7 +7,8 @@ using zuoanqh.UIAL.UST;
 namespace zuoanqh.UIAL.Engine
 {
   /// <summary>
-  /// Parameter meaning was deduced from experiments.
+  /// Note this information might be incorrect since it's merely an informed guess.
+  /// Adjusted means multiplied by "velocity factor" (see CommonReference)
   /// 0: output file
   /// 1: input file
   /// 2: STP adjusted default 0
@@ -21,28 +22,23 @@ namespace zuoanqh.UIAL.Engine
   /// 10:v4 default 0
   /// 11:Overlap Adjusted default VB
   /// 12:p4(optional) default 0
-  /// 13:p5(optional) default 10, but not exist means 0.
+  /// 13:p5(optional) default 10, but if it doesn't exist, it's 0.
   /// 14:v5(optional) default 100
-  /// Adjusted means multiplied by "velocity factor" (see CommonReference)
-  /// that took a bit to figure out.
   /// </summary>
   public class WavtoolParameter
   {
 
     /// <summary>
-    /// Don't forget this can have 12 to 15 elements. 
+    /// This can have 12 to 15 elements. 
     /// </summary>
     public List<string> Args;
 
     /// <summary>
-    /// Yes, I realize this is a different order than resampler parameters, no, i did not make this up.
+    /// Note this is in a different order than resampler parameters.
     /// </summary>
     public string OutputFile { get { return Args[0]; } set { Args[0] = value; } }
     public string InputFile { get { return Args[1]; } set { Args[1] = value; } }
     public double STPAdjusted { get { return Convert.ToDouble(Args[2]); } set { Args[2] = value + ""; } }
-    /// <summary>
-    /// This variable used to be called "ABunchOfStuffCrammedTogether" but i want to be more descriptive.
-    /// </summary>
     public string LengthTempoPreUtteranceAdjusted { get { return Args[3]; } set { Args[3] = value; } }
     public double p1 { get { return Convert.ToDouble(Args[4]); } set { Args[4] = value + ""; } }
     public double p2 { get { return Convert.ToDouble(Args[5]); } set { Args[5] = value + ""; } }
@@ -85,7 +81,7 @@ namespace zuoanqh.UIAL.Engine
         if (Args.Count < 15)
         {
           Args.Add("0");//default p4
-          Args.Add("0");//default p5, so glad this doesn't happen a lot.
+          Args.Add("0");//default p5.
           Args.Add(value + "");
         }
         else
@@ -106,12 +102,11 @@ namespace zuoanqh.UIAL.Engine
         7 is how many non-optional elements from envelope we have.
         first 12(4+7+1) elements in Args is non-optional, elements after are the optional ones.
         You can probably figure out the rest.
-        I do agree the Enumerable.Repeat("", 1) part is a bit silly, but it makes it stay in one line, no loops.
       */
       get
       {
         return new Envelope(String.Join(",", Args.Skip(4).Take(7)
-          .Union(Enumerable.Repeat("%", 1))
+          .Union(Enumerable.Repeat("%", 1))//this is an awkward way to stick to LINQ
           .Union(Args.Skip(12))));
       }
       set
@@ -119,7 +114,7 @@ namespace zuoanqh.UIAL.Engine
         Args = Args.Take(4)
           .Union(value.Parameters.Take(7).Select((s) => s + ""))
           .Union(Enumerable.Repeat(Args[11], 1))
-          .Union(value.Parameters.Skip(8).Select((s) => s + "")).ToList();//oh gees. well i did it at least... hope this works...
+          .Union(value.Parameters.Skip(8).Select((s) => s + "")).ToList();
       }
     }
     /// <summary>
@@ -139,7 +134,7 @@ namespace zuoanqh.UIAL.Engine
       set { LengthTempoPreUtteranceAdjusted = Length + "@" + value + "+" + PreUtteranceAdjusted; }
     }
     /// <summary>
-    /// Length as milliseconds. Don't know why you need this(since you have the file already) but it's there!
+    /// Length as milliseconds.
     /// </summary>
     public double LengthMilliseconds
     {
@@ -147,7 +142,7 @@ namespace zuoanqh.UIAL.Engine
       set { Length = CommonReferences.MillisecondsToTicks(value, Tempo); }
     }
     /// <summary>
-    /// PreUtterance Adjusted cut out from raw data.
+    /// PreUtterance Adjusted part from raw data.
     /// </summary>
     public double PreUtteranceAdjusted
     {
@@ -156,7 +151,7 @@ namespace zuoanqh.UIAL.Engine
     }
 
     /// <summary>
-    /// This constructor is used when you have velocity, and can't be bothered to calculate its effect on other parameters.
+    /// Creates an object with raw parameters and velocity. Parameters are adjusted by velocity.
     /// </summary>
     /// <param name="OutputFile"></param>
     /// <param name="InputFile"></param>
@@ -171,10 +166,10 @@ namespace zuoanqh.UIAL.Engine
       double Tempo, double PreUtterance, double Overlap, Envelope Envelope, double Velocity)
       : this(OutputFile, InputFile, STP * CommonReferences.GetEffectiveVelocityFactor(Velocity),
           Length, Tempo, PreUtterance * CommonReferences.GetEffectiveVelocityFactor(Velocity),
-          Overlap * CommonReferences.GetEffectiveVelocityFactor(Velocity), Envelope)//now that's a mouthful.
+          Overlap * CommonReferences.GetEffectiveVelocityFactor(Velocity), Envelope)
     { }
     /// <summary>
-    /// This constructor is used when you have adjusted parameters.
+    /// Creates an object with velocity-adjusted parameters.
     /// </summary>
     /// <param name="OutputFile"></param>
     /// <param name="InputFile"></param>
@@ -189,7 +184,7 @@ namespace zuoanqh.UIAL.Engine
     {
       Args = new List<string> { OutputFile, InputFile, STPAdjusted + "", Length + "@" + Tempo + "+" + PreUtteranceAdjusted };
       var l = zusp.Split(Envelope.ToString(), ",").ToList();
-      if (l.Count > 7) l.RemoveAt(7);//remove the stupid percent mark
+      if (l.Count > 7) l.RemoveAt(7);//removes the percent mark
       Args.AddRange(l);
     }
 
@@ -208,7 +203,10 @@ namespace zuoanqh.UIAL.Engine
     {
       Args = new List<string>(12);//there's 12 parameters + 1 or 3 optional depending on the envelope.
     }
-
+    /// <summary>
+    /// Create a new instance with given parameters.
+    /// </summary>
+    /// <param name="Args"></param>
     public WavtoolParameter(string[] Args)
       : this(Args.ToList())
     { }
