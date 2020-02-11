@@ -8,14 +8,14 @@ using System.Text.RegularExpressions;
 
 namespace zuoanqh.UIAL.UST
 {
-    /// <summary>
-    /// Since each resampler defines its own flags, there's no one-size-fit-all solution to handling flags.
-    /// The algorithm here should handle flags from Vanilla, Moresampler, and Utaugrowl perfectly.
-    /// Other flags may not be parsed correctly without adding their definitions.
-    /// 
-    /// This class is immutable. 
-    /// </summary>
-    public class Flags
+  /// <summary>
+  /// Since each resampler defines its own flags, there's no one-size-fit-all solution to handling flags.
+  /// The algorithm here should handle flags from Vanilla, Moresampler, and Utaugrowl perfectly.
+  /// Other flags may not be parsed correctly without adding their definitions.
+  /// 
+  /// This class is immutable. 
+  /// </summary>
+  public class Flags
   {
     //public const string KEY_ALL_KNOWN_FLAGS = "Flags.ALL_KNOWN_FLAGS", KEY_NO_PARAMETER_FLAGS = "Flags.NO_PARAMETER_FLAGS";
 
@@ -37,9 +37,9 @@ namespace zuoanqh.UIAL.UST
     public static IReadOnlyCollection<string> YES_PARAMETER_FLAGS { get { return (IReadOnlyCollection<string>)yesParamFlags; } }
     private static HashSet<string> yesParamFlags;
 
-    private static string[] vanilla = new string[] { "g", "t", "B", "Y", "H", "h", "F", "L", "b", "C", "c", "D", "E", "P", "W", "G" };
-    private static string[] moresampler = new string[] { "e", "A", "Mt", "Mb", "Md", "Mo", "ME", "Mm", "Ms", "Me", ":e", "MC", "MG", "MD" }; //note ":e" is now obsolete.
-    private static string[] utaugrowl = new string[] { "w", "<", ">", "_", "%" };
+    private static string[] vanilla = { "g", "t", "B", "Y", "H", "h", "F", "L", "b", "C", "c", "D", "E", "P", "W", "G" };
+    private static string[] moresampler = { "e", "A", "Mt", "Mb", "Md", "Mo", "ME", "Mm", "Ms", "Me", ":e", "MC", "MG", "MD" }; //note ":e" is now obsolete.
+    private static string[] utaugrowl = { "w", "<", ">", "_", "%" };
     static Flags()
     {
       //this will make a setting file the first time you run it, but wont change anything if there already is values.
@@ -66,7 +66,6 @@ namespace zuoanqh.UIAL.UST
     /// <param name="NewFlags"></param>
     public static void AddNewNoParamFlags(bool IgnoreIfExistsAlready, params string[] NewFlags)
     {
-      //TODO: format really long lines here
       foreach (string s in NewFlags)
       {
         foreach (string v in noParamFlags)
@@ -77,7 +76,8 @@ namespace zuoanqh.UIAL.UST
           //n^3 time complexity is acceptable because the amount of flags is small, and this code is not called very often.
           foreach (string v2 in noParamFlags)
             if ((s + v2).Equals(v) || (v2 + s).Equals(v))
-              throw new ArgumentException("Flag " + s + " cannot be added because there exists flag [" + v2 + "] that makes another existing flag [" + v + "] ambiguous when combined");
+              throw new ArgumentException("Flag " + s + " cannot be added because there exists flag [" + v2 +
+                "] that makes another existing flag [" + v + "] ambiguous when combined");
         }
 
         foreach (string v in yesParamFlags)
@@ -87,7 +87,8 @@ namespace zuoanqh.UIAL.UST
 
           foreach (string v2 in yesParamFlags)
             if ((s + v2).Equals(v))//v2+s is not a problem even if it exists since v will always be what you mean and what we parse.
-              throw new ArgumentException("Flag " + s + " cannot be added because there exists flag [" + v2 + "] that makes another existing flag [" + v + "] ambiguous when combined");
+              throw new ArgumentException("Flag " + s + " cannot be added because there exists flag [" + v2 +
+                "] that makes another existing flag [" + v + "] ambiguous when combined");
         }
       }//if everything's okay...
 
@@ -115,7 +116,8 @@ namespace zuoanqh.UIAL.UST
 
           foreach (string v2 in noParamFlags)
             if ((v2 + s).Equals(v))
-              throw new ArgumentException("Flag " + s + " cannot be added because there exists flag [" + v2 + "] that makes another existing flag [" + v + "] ambiguous when combined");//oh the pain of string concatenation
+              throw new ArgumentException("Flag " + s + " cannot be added because there exists flag [" + v2 +
+                "] that makes another existing flag [" + v + "] ambiguous when combined");
         }
       }//if everything's okay...
 
